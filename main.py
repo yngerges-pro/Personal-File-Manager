@@ -1,12 +1,22 @@
 import tkinter as tk
+import db_connection as db
 
 class SignUp:
-    
+
+    def HaveDBReady(self):
+        self.conn = db.connectDataBase()
+        self.cur = self.conn.cursor()
+        db.createTables(self.cur, self.conn)
+
     def submit_info(self):
         username = self.ustxt.get()
         password = self.patxt.get()
         print("Username:", username)
         print("Password:", password)
+        sql = "insert into Users (Username,Password) values (%s,%s)"
+        resc = [username, password]
+        self.cur.execute(sql,resc)
+        self.conn.commit()
 
     def create_signUp_window(self):
         win = tk.Tk()
@@ -31,4 +41,6 @@ class SignUp:
 
 if __name__ == "__main__":
     signUpObj = SignUp()
+    signUpObj.HaveDBReady()
     signUpObj.create_signUp_window()
+
