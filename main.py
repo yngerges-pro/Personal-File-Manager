@@ -1,23 +1,23 @@
 import tkinter as tk
 from tkinter import Label
 import db_connection as db
-import login as lg
+# import login as lg
 from PIL import Image, ImageTk
 import PySimpleGUI as sg
 
 class Login:
-    def __init__(self):
-        self.userN, self.passW = lg.getloginData()
+    # def __init__(self):
+    #     self.userN, self.passW = lg.getloginData()
 
     def login_Submitted(self):
         Cuser = self.ustxt.get()
         CpassW = self.patxt.get()
         print("Username:", Cuser)
         print("Password:", CpassW)
-        if Cuser == self.userN and CpassW == self.passW:
-            print("Correct")
-        else:
-            print("Username and Password does not match.")
+        # if Cuser == self.userN and CpassW == self.passW:
+        #     print("Correct")
+        # else:
+        #     print("Username and Password does not match.")
 
     def create_Login_window(self):
         win = tk.Tk()
