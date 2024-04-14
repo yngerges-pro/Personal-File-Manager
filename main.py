@@ -25,7 +25,7 @@ class Login:
         win.title("Log in")
 
         # Load the exported image from Figma
-        original_image = Image.open("./First.png")
+        original_image = Image.open("./Personal-File-Manager-main/First.png")
         
         # Resize the image to 500x500 pixels
         resized_image = original_image.resize((500, 500))
