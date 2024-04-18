@@ -5,6 +5,9 @@
 ###     Definition: 2 datatype both character varying IN
 ###                 for argument one put p_username
 ###                 for argument two put p_password
+### Like so:
+![image](https://github.com/yngerges-pro/Personal-File-Manager/assets/102266055/af26e7bf-aeac-4fbf-a44f-c21cd03ad8a3)
+
 ###     For code put : 
 ### BEGIN
 ###    RETURN EXISTS (
