@@ -2,41 +2,33 @@ import psycopg2
 from psycopg2.extras import RealDictCursor
 
 def connectDataBase():
-    
-    DB_NAME = "loginfo"
-    DB_USER = "postgres"
-    DB_PASS = "6699"
-    DB_HOST = "localhost"
-    DB_PORT = "5432"
-
     try:
-        conn = psycopg2.connect(database=DB_NAME,
-                                user=DB_USER,
-                                password=DB_PASS,
-                                host=DB_HOST,
-                                port=DB_PORT,
-                                cursor_factory=RealDictCursor)
-        
-        
+        conn = psycopg2.connect(
+            database="loginfo",
+            user="postgres",
+            password="6699",
+            host="localhost",
+            port="5432",
+            cursor_factory=RealDictCursor
+        )
+        print("Database connected successfully")
         return conn
-    
-
-    except:
-        print("Database not connected successfully")
-    
-def done(bol = False):
-    return bol
+    except psycopg2.Error as e:
+        print(f"Error connecting to database: {e}")
+        return None
 
 def createTables(cur, conn):
     try:
-
-        sql = "CREATE TABLE users(ID SERIAL PRIMARY KEY, Username VARCHAR(255) NOT NULL, Password VARCHAR(255) NOT NULL)"
-        cur.execute(sql)
-
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS users (
+                ID SERIAL PRIMARY KEY,
+                Username VARCHAR(255) NOT NULL,
+                Password VARCHAR(255) NOT NULL
+            )
+        """)
         conn.commit()
-        done(True)
-
-    except:
-
+        print("Table 'users' created successfully or already exists")
+    except psycopg2.Error as e:
         conn.rollback()
-        print ("There was a problem during the database creation or the database already exists.")
+        print(f"Error creating table: {e}")
+        raise e
