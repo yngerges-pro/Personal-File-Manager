@@ -16,3 +16,19 @@
 ###        WHERE username = p_username AND password = p_password
 ###    );
 ### END;
+
+
+
+## File Sharing Sender + Receiver Sides
+
+### Sender is Object Class, Create Object at LogIn
+### Sender Side Requires 3 Paramaters (IP, Port, Path)
+#### IP = Current IP
+#### Port = Default Port or Port Assigned By User (Whatever is in SQL)
+#### Path = Default Path to Sharing Directory
+
+### Receiver is Just 1 Method, Not a Class
+### When Pressing Download, Run Method, Requires 3 Paramaters (HostIP, HostPort, Path)
+#### HostIP = IP of Sender, Aquired Before Receiving From SQL
+#### Port = Port of Sender, Aquired Before Receiving From SQL
+#### Path = Default Path to Downloading Directory
