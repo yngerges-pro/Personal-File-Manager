@@ -27,6 +27,15 @@ class ShareFiles():
         self.mySocket.bind((self.PublicIP, self.SharingPort)) # Open Socket for listening
         self.mySocket.listen(5) # Allow up to 5 connections
         # Accept connections
+        try:
+            while True:
+                self.listenLoop()
+        except:
+            # Error Occured, Likely due to socket closing and Thread running "mySocket.accept"
+            # This is so we can close the thread in a 'dirty' but safe way
+            print("Thread Closed.")
+
+    def listenLoop(self):
         client_socket, address = self.mySocket.accept()
         print(f"{address} is connected.")
         # Asked for what file to send
