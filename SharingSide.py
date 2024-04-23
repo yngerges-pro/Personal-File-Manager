@@ -24,6 +24,7 @@ class ShareFiles():
         listen_thread.start() # Start Thread
 
     def listen(self):
+        print("Listening Started")
         self.mySocket.bind((self.PublicIP, self.SharingPort)) # Open Socket for listening
         self.mySocket.listen(5) # Allow up to 5 connections
         # Accept connections
@@ -46,9 +47,8 @@ class ShareFiles():
             allFileNames = fp.read()
             # Send Reply To Confirm is File Exists Or Not
             if received in allFileNames:
-                # File Exists And Allowed, Begin Transfer
-                client_socket.send("File Found, Beginning Transfer!".encode())
-                print("File Found, Transferring " + received + f" to {address}.")
+                # File Allowed in keyword.txt, Begin Transfer!
+                print(f"File Found in keyword.txt, beginning transfer to {address}.")
                 self.transferFile(received, client_socket)
             else:
                 # File Does Not Exist or is Not Allowed To Be Transfered
@@ -61,14 +61,20 @@ class ShareFiles():
     # With File Existing, Begin Transfer
     def transferFile(self, fileName, client_socket):
         filename = self.PathToDirectory + "\\" + fileName
-
-        with open(filename, "rb") as file:
-            while True:
-                bytes_read = file.read(self.BUFFER_SIZE) # Send only 1024 bytes per time
-                if not bytes_read:
-                    # Transmission is done
-                    break
-                client_socket.sendall(bytes_read)
+        try:
+            with open(filename, "rb") as file:
+                client_socket.send("File Found, Beginning Transfer!".encode())
+                print("File Exists, Transferring " + fileName )
+                while True:
+                    bytes_read = file.read(self.BUFFER_SIZE) # Send only 1024 bytes per time
+                    if not bytes_read:
+                        # Transmission is done
+                        break
+                    client_socket.sendall(bytes_read)
+        except:
+            # Error has Occured! Likely Due to file being in keyword.txt, but not in directory!
+            client_socket.send("Error, File Not Found!".encode())
+            print("Error! Could not find file in directory!")
 
         # File Completely Transferred!
 
