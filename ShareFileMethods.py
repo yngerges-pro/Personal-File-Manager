@@ -2,7 +2,7 @@
 
 def viewMyShareFiles(userID, cursorObject):
     userID = str(userID)
-    sql = 'SELECT * FROM usersip WHERE "ID" = ' + userID
+    sql = 'SELECT * FROM files WHERE "ID" = ' + userID
     cursorObject.execute(sql)
     result = cursorObject.fetchall()
     return result
