@@ -1,4 +1,4 @@
-import psycopg2
+# Methods used for Share Files Screen
 
 def viewMyShareFiles(userID, cursorObject):
     userID = str(userID)
