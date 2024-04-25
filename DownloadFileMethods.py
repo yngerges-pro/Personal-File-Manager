@@ -1,4 +1,4 @@
-import psycopg2
+# Methods used for the Download Files Screen
 from ReceivingSide import *
 
 def viewAllDownloadableFiles(cursorObject):
