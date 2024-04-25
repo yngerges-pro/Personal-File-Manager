@@ -1,10 +1,58 @@
 import tkinter as tk
-from tkinter import Label
+from tkinter import Label, Entry, PhotoImage
 from PIL import Image, ImageTk
-import PySimpleGUI as sg
+import os
+import psycopg2 
+import db_connection as db
 
 class user:
-    def logged_in_window(self):
+    def listdownloadsfile(self):
+        try:
+            # Establish a connection to the database
+            conn = db.connectDataBase()
+            cur = conn.cursor()
+
+            # Query the database for files
+            cur.execute('SELECT userid, filename, filesize, description FROM files')
+
+            # Fetch all rows from the result set
+            rows = cur.fetchall()
+
+            print("Rows:", rows)  # Debug print
+
+            # Create a list to store file objects
+            files = []
+
+            # Iterate over the rows and create a file object for each row
+            for row in rows:
+                print("Row:", row)  # Debug print
+                file = {
+                    'UserID': row['userid'],
+                    'FileName': row['filename'],
+                    'FileSize': row['filesize'],
+                    'Description': row['description']
+                }
+                files.append(file)
+
+            # Close the cursor and connection
+            cur.close()
+            conn.close()
+
+            # Return the list of file objects
+            return files
+
+        except psycopg2.Error as e:
+            print(f"Database error: {e}")
+            return []
+
+
+    def downloadfile(self):
+        print("File is now downloaded")
+
+    def logged_in_window(self, Cuser):
+        if hasattr(self, 'win') and self.win:
+            self.win.destroy()  # Close the window or any other logout procedure
+        
         self.win = tk.Tk()
         self.win.geometry("500x500")
         self.win.title("Logged In")
@@ -12,10 +60,273 @@ class user:
         # Load the exported image from Figma
         original_image = Image.open("./Loggedin.png")
         resized_image = original_image.resize((500, 500))
-        bg_image = ImageTk.PhotoImage(resized_image)
+        self.bg_image = ImageTk.PhotoImage(resized_image)
 
-        bg_label = Label(self.win, image=bg_image)
+        bg_label = Label(self.win, image=self.bg_image)
         bg_label.place(x=0, y=0, relwidth=1, relheight=1)
+
+        # Add user label
+        user_label = tk.Label(self.win, text=Cuser, fg="black", font=("Lato", 9, "bold"), background="white")
+        user_label.place(x=90, y=2)
+
+        # Log Out button
+        logout = tk.Button(self.win, text="Log Out", fg="black", font=("Lato", 9, "bold"), width=8, height=1, bd=0, command=self.logout,
+                            background="white")
+        logout.place(x=295, y=2)
+
+        # Manage Shared Files
+        myfiles = tk.Button(self.win, text="Manage Shared Files", font=("Lato", 9, "bold"), width=18, height=1, bd=0, command=lambda: self.my_files_window(Cuser),
+                            fg="#E0E0E0", background="#495580")
+        myfiles.place(x=165, y=150)
+
+        # Download Files button
+        downloadfiles = tk.Button(self.win, text="Download Files", font=("Lato", 9, "bold"), width=12, height=1, bd=0, command=lambda: self.downloads_window(Cuser),
+                           fg="#E0E0E0", background="#495580")
+        downloadfiles.place(x=183, y=285)
 
         # Shows GUI
         self.win.mainloop()
+
+    def guest_window(self, Cuser):
+        if hasattr(self, 'win') and self.win:
+            self.win.destroy()  # Close the window or any other logout procedure
+        
+        self.win = tk.Tk()
+        self.win.geometry("500x500")
+        self.win.title("Guest")
+
+        # Load the exported image from Figma
+        original_image = Image.open("./Guest.png")
+        resized_image = original_image.resize((500, 500))
+        self.bg_image = ImageTk.PhotoImage(resized_image)
+
+        bg_label = Label(self.win, image=self.bg_image)
+        bg_label.place(x=0, y=0, relwidth=1, relheight=1)
+
+        #Log in button
+        downloadfiles = tk.Button(self.win, text="Create Account to Login", font=("Lato", 9, "bold"), width=20, height=2, bd=0,
+                                   command=lambda: self.logout(), fg="#E0E0E0", background="#495580")
+        downloadfiles.place(x=165, y=190)
+
+        # Download Files button
+        downloadfiles = tk.Button(self.win, text="Download Files", font=("Lato", 9, "bold"), width=12, height=1, bd=0, command=lambda: self.downloads_window(Cuser),
+                           fg="#E0E0E0", background="#495580")
+        downloadfiles.place(x=183, y=295)
+
+        # Shows GUI
+        self.win.mainloop()
+    
+    def downloads_window(self, Cuser):
+        page_size = 7  # Number of files to display per page
+        current_page = 1  # Current page number
+        files = []
+
+        def navigate_left():
+            nonlocal current_page
+            if current_page > 1:
+                current_page -= 1
+                display_files()
+
+        def navigate_right():
+            nonlocal current_page
+            total_pages = (len(files) + page_size - 1) // page_size
+            if current_page < total_pages:
+                current_page += 1
+                display_files()
+
+        def display_files():
+            nonlocal current_page, files
+            self.win.destroy()  # Destroy the current window to refresh with updated files
+
+            # Re-create the window
+            self.win = tk.Tk()
+            self.win.geometry("500x500")
+            self.win.title("Download")
+
+            # Load the exported image from Figma
+            original_image = Image.open("./Download.png")
+            resized_image = original_image.resize((500, 500))
+            self.bg_image = ImageTk.PhotoImage(resized_image)
+
+            bg_label = Label(self.win, image=self.bg_image)
+            bg_label.place(x=0, y=0, relwidth=1, relheight=1)
+
+            # Add user label
+            user_label = tk.Label(self.win, text=Cuser, fg="black", font=("Lato", 9, "bold"), background="white")
+            user_label.place(x=90, y=2)
+
+            # Log Out button
+            logout = tk.Button(self.win, text="Log Out", fg="black", font=("Lato", 9, "bold"), width=8, height=1, bd=0, command=self.logout,
+                                background="white")
+            logout.place(x=295, y=2)
+
+            if (Cuser == "Guest"):
+                # Go Back
+                goback = tk.Button(self.win, text="Go Back", font=("Lato", 9, "bold"), width=10, height=1, bd=0, command=lambda: self.guest_window(Cuser),
+                                    fg="#E0E0E0", background="#495580")
+                goback.place(x=80, y=393)
+            else:
+                # Go Back
+                goback = tk.Button(self.win, text="Go Back", font=("Lato", 9, "bold"), width=10, height=1, bd=0, command=lambda: self.logged_in_window(Cuser),
+                                    fg="#E0E0E0", background="#495580")
+                goback.place(x=80, y=393)
+
+            # Calculate the start and end index of files to display based on the current page
+            start_index = (current_page - 1) * page_size
+            end_index = min(start_index + page_size, len(files))
+
+            # Initial y position for the files
+            y_position = 110
+
+            # Display the list of files in the GUI for the current page
+            for i, file in enumerate(files[start_index:end_index], start=start_index):
+                FileName = tk.Label(self.win, text=f"{file['FileName']}", font=('Lato', 9), fg='white', bg="#495580")
+                FileName.place(x=80, y=y_position)  # Use the calculated y_position
+                FileSize = tk.Label(self.win, text=f"{file['FileSize']}", font=('Lato', 9), fg='white', bg="#495580")
+                FileSize.place(x=180, y=y_position)  # Use the calculated y_position
+                Description = tk.Label(self.win, text=f"{file['Description']}", font=('Lato', 9), fg='white', bg="#495580")
+                Description.place(x=280, y=y_position)  # Use the calculated y_position
+                # Download button
+                Download = tk.Button(self.win, text="Download", font=("Lato", 9, "bold"), width=10, height=1, bd=0, command=lambda: self.downloadfile(Cuser),
+                                fg="#E0E0E0", background="#495580")
+                Download.place(x=353, y=y_position)
+
+                # Increment y_position for the next file
+                y_position += 38
+
+            # Arrows
+            left_arrow = tk.Button(self.win, text="◀", font=("Lato", 12), width=2, height=1, bd=0, command=navigate_left,
+                                fg="#E0E0E0", background="#495580")
+            left_arrow.place(x=220, y=390)
+
+            right_arrow = tk.Button(self.win, text="▶", font=("Lato", 12), width=2, height=1, bd=0, command=navigate_right,
+                                fg="#E0E0E0", background="#495580")
+            right_arrow.place(x=270, y=390)
+
+            # Inside the downloads_window method
+            # Search Bar with Icon
+            search_icon = Image.open("./search_icon.png")
+            search_icon = search_icon.resize((20, 20), Image.LANCZOS)  # Resize the icon image to fit the search bar
+            search_icon = ImageTk.PhotoImage(search_icon)
+
+            search_entry = Entry(self.win, font=("Lato", 9), width=15)
+            search_entry.place(x=342, y=397)
+            search_entry.insert(0, "Search...")
+            search_entry.config(fg="#A0A0A0")
+            search_entry.bind("<FocusIn>", lambda event: self.on_search_focus(event, search_entry))
+
+            search_button = tk.Button(self.win, image=search_icon, width=20, height=20, bd=0, 
+                                    command=lambda: self.search_files(search_entry.get()), background="white")
+            search_button.place(x=320, y=395)
+
+            # Shows GUI
+            self.win.mainloop()
+
+        # Initial display of files
+        files = self.listdownloadsfile()
+        display_files()
+
+    
+    def my_files_window(self, Cuser):
+        page_size = 7  # Number of files to display per page
+        current_page = 1  # Current page number
+        files = []
+
+        def navigate_left():
+            nonlocal current_page
+            if current_page > 1:
+                current_page -= 1
+                display_files()
+
+        def navigate_right():
+            nonlocal current_page
+            total_pages = (len(files) + page_size - 1) // page_size
+            if current_page < total_pages:
+                current_page += 1
+                display_files()
+
+        def display_files():
+            nonlocal current_page, files
+            self.win.destroy()  # Destroy the current window to refresh with updated files
+            self.win = tk.Tk()
+            self.win.geometry("500x500")
+            self.win.title("My Files")
+
+            # Load the exported image from Figma
+            original_image = Image.open("./MyFiles.png")
+            resized_image = original_image.resize((500, 500))
+            self.bg_image = ImageTk.PhotoImage(resized_image)
+
+            bg_label = Label(self.win, image=self.bg_image)
+            bg_label.place(x=0, y=0, relwidth=1, relheight=1)
+
+            # Add user label
+            user_label = tk.Label(self.win, text=Cuser, fg="black", font=("Lato", 9, "bold"), background="white")
+            user_label.place(x=90, y=2)
+
+            # Log Out button
+            logout = tk.Button(self.win, text="Log Out", fg="black", font=("Lato", 9, "bold"), width=8, height=1, bd=0, command=self.logout,
+                                background="white")
+            logout.place(x=295, y=2)
+
+             # Calculate the start and end index of files to display based on the current page
+            start_index = (current_page - 1) * page_size
+            end_index = min(start_index + page_size, len(files))
+
+            # Initial y position for the files
+            y_position = 110
+
+            # Display the list of files in the GUI for the current page
+            for i, file in enumerate(files[start_index:end_index], start=start_index):
+                FileName = tk.Label(self.win, text=f"{file['FileName']}", font=('Lato', 9), fg='white', bg="#495580")
+                FileName.place(x=80, y=y_position)  # Use the calculated y_position
+                FileSize = tk.Label(self.win, text=f"{file['FileSize']}", font=('Lato', 9), fg='white', bg="#495580")
+                FileSize.place(x=180, y=y_position)  # Use the calculated y_position
+                Description = tk.Label(self.win, text=f"{file['Description']}", font=('Lato', 9), fg='white', bg="#495580")
+                Description.place(x=280, y=y_position)  # Use the calculated y_position
+                # Edit button
+                Edit = tk.Button(self.win, text="Edit", font=("Lato", 8, "bold"), width=5, height=1, bd=0, command=lambda: self.downloadfile(Cuser),
+                                fg="#E0E0E0", background="#495580")
+                Edit.place(x=347, y=y_position)
+                # Remove button
+                Remove = tk.Button(self.win, text="Remove", font=("Lato", 8, "bold"), width=6, height=1, bd=0, command=lambda: self.downloadfile(Cuser),
+                                fg="#E0E0E0", background="#495580")
+                Remove.place(x=396, y=y_position)
+
+                # Increment y_position for the next file
+                y_position += 38
+
+            # Arrows
+            left_arrow = tk.Button(self.win, text="◀", font=("Lato", 12), width=2, height=1, bd=0, command=navigate_left,
+                                fg="#E0E0E0", background="#495580")
+            left_arrow.place(x=220, y=390)
+
+            right_arrow = tk.Button(self.win, text="▶", font=("Lato", 12), width=2, height=1, bd=0, command=navigate_right,
+                                fg="#E0E0E0", background="#495580")
+            right_arrow.place(x=270, y=390)
+
+            # Go Back
+            goback = tk.Button(self.win, text="Go Back", font=("Lato", 9, "bold"), width=10, height=1, bd=0, command=lambda: self.logged_in_window(Cuser),
+                                fg="#E0E0E0", background="#495580")
+            goback.place(x=80, y=393)
+
+            # Add File
+            addfile = tk.Button(self.win, text="Add File", font=("Lato", 9, "bold"), width=10, height=1, bd=0,
+                                fg="#E0E0E0", background="#495580")
+            addfile.place(x=350, y=393)
+
+        # Shows GUI
+            self.win.mainloop()
+
+        # Initial display of files
+        files = self.listdownloadsfile()
+        display_files()
+
+    def logout(self):
+        if hasattr(self, 'win') and self.win:
+            self.win.destroy()  # Close the window or any other logout procedure
+        os.system("python main.py")  # Run main.py again
+
+        # Shows GUI
+        self.win.mainloop()
+

@@ -18,7 +18,7 @@ class Login:
         if isValid:
             self.win.destroy()  # Destroy the login window
             userObj = user()
-            userObj.logged_in_window()
+            userObj.logged_in_window(Cuser)
         else:
             messagebox.showerror("Error", "Invalid username or password. Please try again.")
             print("Please try again!")
@@ -51,6 +51,12 @@ class Login:
         signUpBtn = tk.Button(self.win, text="Create Account", width=12, height=1, bd=0, command=SignUpObj.GUI,
                               fg="#E0E0E0", background="#495580")
         signUpBtn.place(x=228, y=300)
+
+        # Guest button
+        GuestObj = Guest(self.win)  # Pass the login window instance to the Guest class
+        submit = tk.Button(self.win, text="Guest", width=12, height=1, bd=0, command=GuestObj.guest_login,
+                           fg="#E0E0E0", background="#495580")
+        submit.place(x=228, y=355)
 
         # Shows GUI
         self.win.mainloop()
@@ -140,6 +146,55 @@ class SignUp:
         submit = tk.Button(self.win, text="Sign up", font=('Lato', 12), width=15, height=1, bd=0, command=self.submit_info, fg="#E0E0E0", background="#495580")
         submit.place(x=160, y=324)
 
+        self.win.mainloop()
+
+class Guest:
+    def __init__(self, login_win):
+        self.login_win = login_win  # Store the reference to the login window
+
+    def HaveDBReady(self):
+        self.conn = db.connectDataBase()
+        self.cur = self.conn.cursor()
+        db.createTables(self.cur, self.conn)
+
+    def guest_login(self):
+        self.login_win.destroy()  # Destroy the login window
+    
+        username = "NULL"
+        password = "Guest"
+
+        print("Username:", username)
+        print("Password:", password)
+
+        self.HaveDBReady()
+        
+        # Check if the username already exists
+        check_sql = "SELECT * FROM Users WHERE Username = %s"
+        check_values = (username,)
+        self.cur.execute(check_sql, check_values)
+        existing_user = self.cur.fetchone()
+        Cuser = "Guest"
+
+        if existing_user:
+            #self.win.destroy()  # Destroy the login window
+            userObj = user()
+            userObj.guest_window(Cuser)
+
+        # Insert the new user
+        insert_sql = "INSERT INTO Users (Username, Password) VALUES (%s, %s)"
+        insert_values = (username, password)
+
+        try:
+            self.cur.execute(insert_sql, insert_values)
+            self.conn.commit()
+
+            userObj = user()
+            userObj.guest_window(Cuser)
+
+        except psycopg2.Error as e:
+            self.conn.rollback()
+            print(f"Database insertion error: {e}")
+        # Shows GUI
         self.win.mainloop()
 
 

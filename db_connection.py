@@ -6,7 +6,7 @@ def connectDataBase():
         conn = psycopg2.connect(
             database="loginfo",
             user="postgres",
-            password="6699",
+            password="123456",
             host="localhost",
             port="5432",
             cursor_factory=RealDictCursor
