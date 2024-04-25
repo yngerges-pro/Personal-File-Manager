@@ -1,7 +1,8 @@
 import psycopg2
 
 def viewMyShareFiles(userID, cursorObject):
-    sql = "SELECT * FROM usersip WHERE Id = " + userID
+    userID = str(userID)
+    sql = 'SELECT * FROM usersip WHERE "ID" = ' + userID
     cursorObject.execute(sql)
     result = cursorObject.fetchall()
     return result
