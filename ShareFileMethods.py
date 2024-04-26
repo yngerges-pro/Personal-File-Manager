@@ -1,13 +1,33 @@
+import psycopg2
 # Methods used for Share Files Screen
 
-def viewMyShareFiles(userID, cursorObject):
+def viewMyShareFiles(userID, dataBase):
+    conn = dataBase.connectDatabase
+    cur = conn.cursor()
+    
     userID = str(userID)
     sql = 'SELECT * FROM files WHERE "ID" = ' + userID
-    cursorObject.execute(sql)
-    result = cursorObject.fetchall()
+    cur.execute(sql)
+    
+    rows = cur.fetchall()
+    
+    result = []
+    
+    for row in rows:
+        file = {
+            'UserID': row['userid'],
+            'FileName': row['filename'],
+            'FileSize': row['filesize'],
+            'Description': row['description']
+        }
+        result.append(file)
+
+    cur.close()
+    conn.close()
+    
     return result
 
-def addNewShareFile(userID, fileName, Description, Path, cursorObject):
+def addNewShareFile(userID, fileName, Description, Path, dataBase):
     # Ensure file is not already being shared
     # Either SQL Query for that file, or check keyword.txt
 
@@ -24,7 +44,7 @@ def addNewShareFile(userID, fileName, Description, Path, cursorObject):
     # -2 = File Not In Directory
     return result
 
-def editShareFileDescription(userID, fileName, newDescription, cursorObject):
+def editShareFileDescription(userID, fileName, newDescription, dataBase):
     # Simply SQL UPDATE the row where userID + fileName, update description
     sql = ""
 
@@ -33,7 +53,7 @@ def editShareFileDescription(userID, fileName, newDescription, cursorObject):
     # -1 = Error
     return result
 
-def deleteShareFile(userID, fileName, Path, cursorObject):
+def deleteShareFile(userID, fileName, Path, dataBase):
     # Simply SQL DELETE row where userID + fileName
     sql = ""
 
