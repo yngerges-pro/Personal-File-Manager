@@ -1,10 +1,30 @@
+import psycopg2
 # Methods used for Share Files Screen
 
-def viewMyShareFiles(userID, cursorObject):
+def viewMyShareFiles(userID, dataBase):
+    conn = dataBase.connectDatabase
+    cur = conn.cursor()
+    
     userID = str(userID)
     sql = 'SELECT * FROM files WHERE "ID" = ' + userID
-    cursorObject.execute(sql)
-    result = cursorObject.fetchall()
+    cur.execute(sql)
+    
+    rows = cur.fetchall()
+    
+    result = []
+    
+    for row in rows:
+        file = {
+            'UserID': row['userid'],
+            'FileName': row['filename'],
+            'FileSize': row['filesize'],
+            'Description': row['description']
+        }
+        result.append(file)
+
+    cur.close()
+    conn.close()
+    
     return result
 
 def addNewShareFile(userID, fileName, Description, Path, cursorObject):
