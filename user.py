@@ -4,6 +4,8 @@ from PIL import Image, ImageTk
 import os
 import psycopg2 
 import db_connection as db
+from DownloadFileMethods import viewAllDownloadableFiles, searchForDownloadableFiles, downloadThisFile
+from ShareFileMethods import viewMyShareFiles, addNewShareFile, editShareFileDescription, deleteShareFile
 
 class user:
     def listdownloadsfile(self):
@@ -84,6 +86,11 @@ class user:
                            fg="#E0E0E0", background="#495580")
         downloadfiles.place(x=183, y=285)
 
+        #white box
+        # Add user label
+        box = tk.Label(self.win, widths=15, height=20, background="#E0E0E0")
+        box.place(x=90, y=300)
+
         # Shows GUI
         self.win.mainloop()
 
@@ -120,6 +127,19 @@ class user:
         page_size = 7  # Number of files to display per page
         current_page = 1  # Current page number
         files = []
+
+        def search(query):
+            
+            # Check if the search query is empty
+            if not query.strip():
+                # If the search query is empty, retrieve all downloadable files
+                files = viewAllDownloadableFiles()
+            else:
+                # Call a function to retrieve files based on the search query
+                files = searchForDownloadableFiles(query)
+
+            # Display the updated list of files
+            display_files(files)
 
         def navigate_left():
             nonlocal current_page
@@ -158,18 +178,18 @@ class user:
             # Log Out button
             logout = tk.Button(self.win, text="Log Out", fg="black", font=("Lato", 9, "bold"), width=8, height=1, bd=0, command=self.logout,
                                 background="white")
-            logout.place(x=295, y=2)
+            logout.place(x=425, y=2)
 
             if (Cuser == "Guest"):
                 # Go Back
-                goback = tk.Button(self.win, text="Go Back", font=("Lato", 9, "bold"), width=10, height=1, bd=0, command=lambda: self.guest_window(Cuser),
+                goback = tk.Button(self.win, text="Go Back", font=("Lato", 9, "bold"), width=7, height=1, bd=0, command=lambda: self.guest_window(Cuser),
                                     fg="#E0E0E0", background="#495580")
-                goback.place(x=80, y=393)
+                goback.place(x=80, y=390)
             else:
                 # Go Back
-                goback = tk.Button(self.win, text="Go Back", font=("Lato", 9, "bold"), width=10, height=1, bd=0, command=lambda: self.logged_in_window(Cuser),
+                goback = tk.Button(self.win, text="Go Back", font=("Lato", 9, "bold"), width=7, height=1, bd=0, command=lambda: self.logged_in_window(Cuser),
                                     fg="#E0E0E0", background="#495580")
-                goback.place(x=80, y=393)
+                goback.place(x=80, y=390)
 
             # Calculate the start and end index of files to display based on the current page
             start_index = (current_page - 1) * page_size
@@ -187,9 +207,11 @@ class user:
                 Description = tk.Label(self.win, text=f"{file['Description']}", font=('Lato', 9), fg='white', bg="#495580")
                 Description.place(x=280, y=y_position)  # Use the calculated y_position
                 # Download button
-                Download = tk.Button(self.win, text="Download", font=("Lato", 9, "bold"), width=10, height=1, bd=0, command=lambda: self.downloadfile(Cuser),
-                                fg="#E0E0E0", background="#495580")
+                Download = tk.Button(self.win, text="Download", font=("Lato", 9, "bold"), width=10, height=1, bd=0, 
+                            command=lambda userid=file['UserID'], filename=file['FileName'], filesize=file['FileSize'], description=file['Description']: downloadThisFile(userid, filename, filesize, description),
+                            fg="#E0E0E0", background="#495580")
                 Download.place(x=353, y=y_position)
+
 
                 # Increment y_position for the next file
                 y_position += 38
@@ -197,33 +219,33 @@ class user:
             # Arrows
             left_arrow = tk.Button(self.win, text="◀", font=("Lato", 12), width=2, height=1, bd=0, command=navigate_left,
                                 fg="#E0E0E0", background="#495580")
-            left_arrow.place(x=220, y=390)
+            left_arrow.place(x=188, y=386)
 
             right_arrow = tk.Button(self.win, text="▶", font=("Lato", 12), width=2, height=1, bd=0, command=navigate_right,
                                 fg="#E0E0E0", background="#495580")
-            right_arrow.place(x=270, y=390)
+            right_arrow.place(x=218, y=386)
 
             # Inside the downloads_window method
             # Search Bar with Icon
             search_icon = Image.open("./search_icon.png")
-            search_icon = search_icon.resize((20, 20), Image.LANCZOS)  # Resize the icon image to fit the search bar
+            search_icon = search_icon.resize((26, 26), Image.LANCZOS)  # Resize the icon image to fit the search bar
             search_icon = ImageTk.PhotoImage(search_icon)
 
-            search_entry = Entry(self.win, font=("Lato", 9), width=15)
-            search_entry.place(x=342, y=397)
+            search_entry = Entry(self.win, font=("Lato", 9), width=18, background="#E0E0E0")
+            search_entry.place(x=312, y=390)
             search_entry.insert(0, "Search...")
             search_entry.config(fg="#A0A0A0")
             search_entry.bind("<FocusIn>", lambda event: self.on_search_focus(event, search_entry))
 
-            search_button = tk.Button(self.win, image=search_icon, width=20, height=20, bd=0, 
-                                    command=lambda: self.search_files(search_entry.get()), background="white")
-            search_button.place(x=320, y=395)
+            search_button = tk.Button(self.win, image=search_icon, bd=0, 
+                                    command=lambda: search(search_entry.get()), background="#E0E0E0")
+            search_button.place(x=283, y=387)
 
             # Shows GUI
             self.win.mainloop()
 
         # Initial display of files
-        files = self.listdownloadsfile()
+        files = viewAllDownloadableFiles()
         display_files()
 
     
@@ -267,7 +289,7 @@ class user:
             # Log Out button
             logout = tk.Button(self.win, text="Log Out", fg="black", font=("Lato", 9, "bold"), width=8, height=1, bd=0, command=self.logout,
                                 background="white")
-            logout.place(x=295, y=2)
+            logout.place(x=425, y=2)
 
              # Calculate the start and end index of files to display based on the current page
             start_index = (current_page - 1) * page_size
@@ -285,11 +307,13 @@ class user:
                 Description = tk.Label(self.win, text=f"{file['Description']}", font=('Lato', 9), fg='white', bg="#495580")
                 Description.place(x=280, y=y_position)  # Use the calculated y_position
                 # Edit button
-                Edit = tk.Button(self.win, text="Edit", font=("Lato", 8, "bold"), width=5, height=1, bd=0, command=lambda: self.downloadfile(Cuser),
+                Edit = tk.Button(self.win, text="Edit", font=("Lato", 8, "bold"), width=5, height=1, bd=0, 
+                                command=lambda userid=file['UserID'], filename=file['FileName'], filesize=file['FileSize'], description=file['Description']: editShareFileDescription(userid, filename, filesize, description),
                                 fg="#E0E0E0", background="#495580")
                 Edit.place(x=347, y=y_position)
                 # Remove button
-                Remove = tk.Button(self.win, text="Remove", font=("Lato", 8, "bold"), width=6, height=1, bd=0, command=lambda: self.downloadfile(Cuser),
+                Remove = tk.Button(self.win, text="Remove", font=("Lato", 8, "bold"), width=6, height=1, bd=0,
+                                command=lambda userid=file['UserID'], filename=file['FileName'], filesize=file['FileSize'], description=file['Description']: deleteShareFile(userid, filename, filesize, description),
                                 fg="#E0E0E0", background="#495580")
                 Remove.place(x=396, y=y_position)
 
@@ -299,11 +323,11 @@ class user:
             # Arrows
             left_arrow = tk.Button(self.win, text="◀", font=("Lato", 12), width=2, height=1, bd=0, command=navigate_left,
                                 fg="#E0E0E0", background="#495580")
-            left_arrow.place(x=220, y=390)
+            left_arrow.place(x=218, y=392)
 
             right_arrow = tk.Button(self.win, text="▶", font=("Lato", 12), width=2, height=1, bd=0, command=navigate_right,
                                 fg="#E0E0E0", background="#495580")
-            right_arrow.place(x=270, y=390)
+            right_arrow.place(x=247, y=392)
 
             # Go Back
             goback = tk.Button(self.win, text="Go Back", font=("Lato", 9, "bold"), width=10, height=1, bd=0, command=lambda: self.logged_in_window(Cuser),
@@ -312,14 +336,15 @@ class user:
 
             # Add File
             addfile = tk.Button(self.win, text="Add File", font=("Lato", 9, "bold"), width=10, height=1, bd=0,
+                                command=lambda userid=file['UserID'], filename=file['FileName'], filesize=file['FileSize'], description=file['Description']: addNewShareFile(userid, filename, filesize, description),
                                 fg="#E0E0E0", background="#495580")
-            addfile.place(x=350, y=393)
+            addfile.place(x=340, y=393)
 
         # Shows GUI
             self.win.mainloop()
 
         # Initial display of files
-        files = self.listdownloadsfile()
+        files = viewMyShareFiles()
         display_files()
 
     def logout(self):
