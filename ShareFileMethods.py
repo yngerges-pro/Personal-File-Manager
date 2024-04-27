@@ -1,8 +1,9 @@
 import psycopg2
+import db_connect as db
 # Methods used for Share Files Screen
 
-def viewMyShareFiles(userID, dataBase):
-    conn = dataBase.connectDatabase
+def viewMyShareFiles(userID):
+    conn = db.connectDataBase()
     cur = conn.cursor()
     
     userID = str(userID)
@@ -27,7 +28,9 @@ def viewMyShareFiles(userID, dataBase):
     
     return result
 
-def addNewShareFile(userID, fileName, Description, Path, dataBase):
+def addNewShareFile(userID, fileName, Description, Path):
+    conn = db.connectDataBase()
+    cur = conn.cursor()
     # Ensure file is not already being shared
     # Either SQL Query for that file, or check keyword.txt
 
@@ -38,27 +41,42 @@ def addNewShareFile(userID, fileName, Description, Path, dataBase):
     # SQL INSERT new row into files table
     sql = ""
 
+    
+    cur.close()
+    conn.close()
+    
     # result is a code here, either successful, or not
     # 1 = success
     # -1 = File Already Shared
     # -2 = File Not In Directory
+    
     return result
 
-def editShareFileDescription(userID, fileName, newDescription, dataBase):
+def editShareFileDescription(userID, fileName, newDescription):
+    conn = db.connectDataBase()
+    cur = conn.cursor()
     # Simply SQL UPDATE the row where userID + fileName, update description
     sql = ""
 
+    cur.close()
+    conn.close()
+    
     # result is a code here, either successful, or not
     # 1 = success
     # -1 = Error
     return result
 
-def deleteShareFile(userID, fileName, Path, dataBase):
+def deleteShareFile(userID, fileName, Path):
+    conn = db.connectDataBase()
+    cur = conn.cursor()
     # Simply SQL DELETE row where userID + fileName
     sql = ""
 
     # Delete line in keyword.txt of fileName
 
+    cur.close()
+    conn.close()
+    
     # result is a code here, either successful, or not
     # 1 = success
     # -1 Error
