@@ -344,7 +344,7 @@ class user:
             self.win.mainloop()
 
         # Initial display of files
-        files = viewMyShareFiles()
+        files = viewMyShareFiles(Cuser)
         display_files()
 
     def logout(self):
