@@ -1,5 +1,5 @@
 import psycopg2
-import db_connect as db
+import db_connection as db
 # Methods used for Share Files Screen
 
 def viewMyShareFiles(userID):
@@ -7,7 +7,7 @@ def viewMyShareFiles(userID):
     cur = conn.cursor()
     
     userID = str(userID)
-    sql = 'SELECT * FROM files WHERE "ID" = ' + userID
+    sql = 'SELECT * FROM files WHERE "UserID" = ' + userID
     cur.execute(sql)
     
     rows = cur.fetchall()

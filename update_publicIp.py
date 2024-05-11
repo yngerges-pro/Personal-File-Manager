@@ -9,8 +9,8 @@ def update_publicIp(username, public_Ip):
             return False
 
         cur = conn.cursor()
-        update_sql = "UPDATE \"usersIP\" SET ip = %s WHERE username = %s"
-        cur.execute(update_sql, (public_Ip, username))
+        update_sql = "UPDATE \"usersip\" JOIN users ON users.username = %s SET usersip.ip = %s"  
+        cur.execute(update_sql, (username, public_Ip))
         conn.commit()
         return True
     except psycopg2.Error as e:
@@ -28,7 +28,7 @@ def check_public_ip(username, current_ip):
             return False
 
         cur = conn.cursor()
-        select_sql = "SELECT ip FROM \"usersIP\" WHERE username = %s"
+        select_sql = "SELECT usersip.ip, users.username FROM usersip INNER JOIN users ON users.username = %s"
         cur.execute(select_sql, (username,))
         user_ip = cur.fetchone()
 

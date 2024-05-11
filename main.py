@@ -6,6 +6,12 @@ import PySimpleGUI as sg
 import psycopg2
 from login import getloginData
 from user import user
+from user_publicIp import user_publicIp
+from update_publicIp import check_public_ip
+from update_publicIp import update_publicIp   
+from user_status import user_status
+from user_status import not_logged_in
+
 
 
 class Login:
@@ -17,8 +23,16 @@ class Login:
         isValid = getloginData(Cuser, CpassW)
         if isValid:
             self.win.destroy()  # Destroy the login window
+            current_ip = user_publicIp()
+            # Check IP address in the database
+            check_public_ip(Cuser, current_ip)  #the entered username in the login window
+            # Update the IP address in the database
+            update_publicIp(Cuser, current_ip)  #Updates 
+            user_status(Cuser, True)
             userObj = user()
             userObj.logged_in_window(Cuser)
+
+         
         else:
             messagebox.showerror("Error", "Invalid username or password. Please try again.")
             print("Please try again!")
@@ -29,7 +43,7 @@ class Login:
         self.win.title("Log in")
 
         # Load the exported image from Figma
-        original_image = Image.open("./First.png")
+        original_image = Image.open("Personal-File-Manager/First.png")
         resized_image = original_image.resize((500, 500))
         self.bg_image = ImageTk.PhotoImage(resized_image)  # Store a reference to the PhotoImage object
 
@@ -125,7 +139,7 @@ class SignUp:
         self.win.title("Sign up")
 
         # Load the exported image from Figma
-        original_image = Image.open("./Second.png")
+        original_image = Image.open("Personal-File-Manager/Second.png")
         resized_image = original_image.resize((500, 500))
         bg_image = ImageTk.PhotoImage(resized_image)
 

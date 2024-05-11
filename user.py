@@ -6,6 +6,7 @@ import psycopg2
 import db_connection as db
 from DownloadFileMethods import viewAllDownloadableFiles, searchForDownloadableFiles, downloadThisFile
 from ShareFileMethods import viewMyShareFiles, addNewShareFile, editShareFileDescription, deleteShareFile
+from user_status import not_logged_in
 
 class user:
     def listdownloadsfile(self):
@@ -60,7 +61,7 @@ class user:
         self.win.title("Logged In")
 
         # Load the exported image from Figma
-        original_image = Image.open("./Loggedin.png")
+        original_image = Image.open("Personal-File-Manager/Loggedin.png")
         resized_image = original_image.resize((500, 500))
         self.bg_image = ImageTk.PhotoImage(resized_image)
 
@@ -72,7 +73,7 @@ class user:
         user_label.place(x=90, y=2)
 
         # Log Out button
-        logout = tk.Button(self.win, text="Log Out", fg="black", font=("Lato", 9, "bold"), width=8, height=1, bd=0, command=self.logout,
+        logout = tk.Button(self.win, text="Log Out", fg="black", font=("Lato", 9, "bold"), width=8, height=1, bd=0, command=lambda:self.logout(Cuser),
                             background="white")
         logout.place(x=295, y=2)
 
@@ -88,7 +89,7 @@ class user:
 
         #white box
         # Add user label
-        box = tk.Label(self.win, widths=15, height=20, background="#E0E0E0")
+        box = tk.Label(self.win, width=15, height=20, background="#E0E0E0")
         box.place(x=90, y=300)
 
         # Shows GUI
@@ -103,7 +104,7 @@ class user:
         self.win.title("Guest")
 
         # Load the exported image from Figma
-        original_image = Image.open("./Guest.png")
+        original_image = Image.open("./Personal-File-Manager-main/Guest.png")
         resized_image = original_image.resize((500, 500))
         self.bg_image = ImageTk.PhotoImage(resized_image)
 
@@ -112,7 +113,7 @@ class user:
 
         #Log in button
         downloadfiles = tk.Button(self.win, text="Create Account to Login", font=("Lato", 9, "bold"), width=20, height=2, bd=0,
-                                   command=lambda: self.logout(), fg="#E0E0E0", background="#495580")
+                                   command=lambda: self.logout(Cuser), fg="#E0E0E0", background="#495580")
         downloadfiles.place(x=165, y=190)
 
         # Download Files button
@@ -164,7 +165,7 @@ class user:
             self.win.title("Download")
 
             # Load the exported image from Figma
-            original_image = Image.open("./Download.png")
+            original_image = Image.open("./Personal-File-Manager-main/Download.png")
             resized_image = original_image.resize((500, 500))
             self.bg_image = ImageTk.PhotoImage(resized_image)
 
@@ -176,7 +177,7 @@ class user:
             user_label.place(x=90, y=2)
 
             # Log Out button
-            logout = tk.Button(self.win, text="Log Out", fg="black", font=("Lato", 9, "bold"), width=8, height=1, bd=0, command=self.logout,
+            logout = tk.Button(self.win, text="Log Out", fg="black", font=("Lato", 9, "bold"), width=8, height=1, bd=0, command=lambda:self.logout(Cuser),
                                 background="white")
             logout.place(x=425, y=2)
 
@@ -227,7 +228,7 @@ class user:
 
             # Inside the downloads_window method
             # Search Bar with Icon
-            search_icon = Image.open("./search_icon.png")
+            search_icon = Image.open("./Personal-File-Manager-main/search_icon.png")
             search_icon = search_icon.resize((26, 26), Image.LANCZOS)  # Resize the icon image to fit the search bar
             search_icon = ImageTk.PhotoImage(search_icon)
 
@@ -275,7 +276,7 @@ class user:
             self.win.title("My Files")
 
             # Load the exported image from Figma
-            original_image = Image.open("./MyFiles.png")
+            original_image = Image.open("./Personal-File-Manager-main/MyFiles.png")
             resized_image = original_image.resize((500, 500))
             self.bg_image = ImageTk.PhotoImage(resized_image)
 
@@ -287,7 +288,7 @@ class user:
             user_label.place(x=90, y=2)
 
             # Log Out button
-            logout = tk.Button(self.win, text="Log Out", fg="black", font=("Lato", 9, "bold"), width=8, height=1, bd=0, command=self.logout,
+            logout = tk.Button(self.win, text="Log Out", fg="black", font=("Lato", 9, "bold"), width=8, height=1, bd=0, command=lambda:self.logout(Cuser),
                                 background="white")
             logout.place(x=425, y=2)
 
@@ -347,11 +348,11 @@ class user:
         files = viewMyShareFiles(Cuser)
         display_files()
 
-    def logout(self):
+    def logout(self,Cuser):
         if hasattr(self, 'win') and self.win:
             self.win.destroy()  # Close the window or any other logout procedure
         os.system("python main.py")  # Run main.py again
+        not_logged_in(Cuser,False)
 
         # Shows GUI
         self.win.mainloop()
-
