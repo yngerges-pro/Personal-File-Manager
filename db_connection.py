@@ -6,7 +6,7 @@ def connectDataBase():
         conn = psycopg2.connect(
             database="loginfo",
             user="postgres",
-            password="123456",
+            password="6699",
             host="localhost",
             port="5432",
             cursor_factory=RealDictCursor
@@ -22,8 +22,11 @@ def createTables(cur, conn):
         cur.execute("""
             CREATE TABLE IF NOT EXISTS users (
                 ID SERIAL PRIMARY KEY,
-                Username VARCHAR(255) NOT NULL,
-                Password VARCHAR(255) NOT NULL
+                username VARCHAR(255) NOT NULL,
+                password VARCHAR(255) NOT NULL,
+                ip VARCHAR,
+                port VARCHAR,
+                status BOOLEAN
             )
         """)
         conn.commit()
