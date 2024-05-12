@@ -1,13 +1,13 @@
 import psycopg2
-import db_connect as db
+import db_connection as db
 # Methods used for Share Files Screen
 
-def viewMyShareFiles(userID):
+def viewMyShareFiles(user):
     conn = db.connectDataBase()
     cur = conn.cursor()
     
-    userID = str(userID)
-    sql = 'SELECT * FROM files WHERE "ID" = ' + userID
+    userID = str(user)
+    sql = 'SELECT * FROM files WHERE "userid" = ' + userID
     cur.execute(sql)
     
     rows = cur.fetchall()
