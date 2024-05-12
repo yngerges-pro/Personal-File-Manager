@@ -17,8 +17,6 @@
 ###    );
 ### END;
 
-
-
 ## File Sharing Sender + Receiver Sides
 
 ### Sender is Object Class, Create Object at LogIn
@@ -33,13 +31,10 @@
 #### Port = Port of Sender, Aquired Before Receiving From SQL
 #### Path = Default Path to Downloading Directory
 
-#### Should have two new tables (files, usersip)
-![image](https://github.com/yngerges-pro/Personal-File-Manager/assets/102266055/dd5d9dc4-2084-485c-81a1-35bf37501a83)
+#### Should Delete users and usersip tables
 
 #### files
 ![image](https://github.com/yngerges-pro/Personal-File-Manager/assets/102266055/2cd696e5-bb53-4222-90ff-0dc0ef433113)
 
-## usersip
-![image](https://github.com/yngerges-pro/Personal-File-Manager/assets/102266055/bda1045f-2b70-45b9-93fc-ad550069c698)
 
 
