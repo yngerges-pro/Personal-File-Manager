@@ -9,7 +9,7 @@ def user_status(username, change_status):
             print("Failed to connect to the database.")
             return False
         cur = conn.cursor()
-        status_sql = "UPDATE \"usersIP\" SET status = %s WHERE username = %s"
+        status_sql = "UPDATE \"users\" SET status = %s WHERE username = %s"
         cur.execute(status_sql, (change_status, username,)) #change status to true 
         conn.commit()
         print("User is now ONLINE")
@@ -29,7 +29,7 @@ def not_logged_in(username, change_status):
             return False
     
         cur = conn.cursor()
-        status_sql = "UPDATE \"usersIP\" SET status = %s WHERE username = %s"
+        status_sql = "UPDATE \"users\" SET status = %s WHERE username = %s"
         cur.execute(status_sql, (change_status,username,)) #change status to False
         conn.commit()
         print("User is now OFFLINE")
