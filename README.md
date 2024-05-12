@@ -31,9 +31,9 @@
 #### Port = Port of Sender, Aquired Before Receiving From SQL
 #### Path = Default Path to Downloading Directory
 
-#### Should Delete users and usersip tables
+## Should Delete users and usersip tables
 
-#### files
+## files
 ![image](https://github.com/yngerges-pro/Personal-File-Manager/assets/102266055/2cd696e5-bb53-4222-90ff-0dc0ef433113)
 
 
