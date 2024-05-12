@@ -6,7 +6,13 @@ import PySimpleGUI as sg
 import psycopg2
 from login import getloginData
 from user import user
+from user_publicIp import user_publicIp
+from update_publicIp import check_public_ip
+from update_publicIp import update_publicIp   
+from user_status import user_status
+from user_status import not_logged_in
 
+from update_publicIp import insert
 
 class Login:
     def login_Submitted(self):
@@ -14,14 +20,27 @@ class Login:
         CpassW = self.patxt.get()
         print("Username:", Cuser)
         print("Password:", CpassW)
+
         isValid = getloginData(Cuser, CpassW)
         if isValid:
-            self.win.destroy()  # Destroy the login window
-            userObj = user()
-            userObj.logged_in_window(Cuser)
+            pass
         else:
             messagebox.showerror("Error", "Invalid username or password. Please try again.")
             print("Please try again!")
+
+        self.win.destroy()  # Destroy the login window
+        current_ip = user_publicIp()
+        status = True
+        print("IP", current_ip)
+        print("status", status)
+        #inserts the infos
+        insert(Cuser,CpassW,current_ip,"5433",status)
+        
+        # Check IP address in the database
+        check_public_ip(Cuser, current_ip,"5433",status)  #the entered username in the login window
+        
+        userObj = user()
+        userObj.logged_in_window(Cuser)
 
     def create_Login_window(self):
         self.win = tk.Tk()
@@ -29,7 +48,7 @@ class Login:
         self.win.title("Log in")
 
         # Load the exported image from Figma
-        original_image = Image.open("./First.png")
+        original_image = Image.open("First.png")
         resized_image = original_image.resize((500, 500))
         self.bg_image = ImageTk.PhotoImage(resized_image)  # Store a reference to the PhotoImage object
 
@@ -86,7 +105,7 @@ class SignUp:
         self.HaveDBReady()
         
         # Check if the username already exists
-        check_sql = "SELECT * FROM Users WHERE Username = %s"
+        check_sql = "SELECT * FROM users WHERE username = %s"
         check_values = (username,)
         self.cur.execute(check_sql, check_values)
         existing_user = self.cur.fetchone()
@@ -125,7 +144,7 @@ class SignUp:
         self.win.title("Sign up")
 
         # Load the exported image from Figma
-        original_image = Image.open("./Second.png")
+        original_image = Image.open("Second.png")
         resized_image = original_image.resize((500, 500))
         bg_image = ImageTk.PhotoImage(resized_image)
 
@@ -181,7 +200,7 @@ class Guest:
             userObj.guest_window(Cuser)
 
         # Insert the new user
-        insert_sql = "INSERT INTO Users (Username, Password) VALUES (%s, %s)"
+        insert_sql = "INSERT INTO users (Username, Password) VALUES (%s, %s)"
         insert_values = (username, password)
 
         try:
