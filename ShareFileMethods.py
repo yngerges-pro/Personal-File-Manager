@@ -1,7 +1,34 @@
 import os
+import pathlib
 import psycopg2
 import db_connection as db
-import delete_file
+# import delete_file -- Delete this file later
+
+# Side Methods
+def createPath():
+    # Will return where this code is at, then add the directory ShareFiles onto path
+    return pathlib.Path(__file__).parent.resolve() + "\\ShareFiles"
+
+def convert_bytes(num):
+    """
+    this function will convert bytes to MB.... GB... etc
+    """
+    for x in ['bytes', 'KB', 'MB', 'GB', 'TB']:
+        if num < 1024.0:
+            return "%3.1f %s" % (num, x)
+        num /= 1024.0
+
+
+def file_size(file_path):
+    """
+    this function will return the file size
+    """
+    if os.path.isfile(file_path):
+        # Get Number of bytes
+        file_info = os.stat(file_path)
+        # Convert bytes to larger units if possible
+        return convert_bytes(file_info.st_size)
+
 # Methods used for Share Files Screen
 
 def viewMyShareFiles(userID):
@@ -30,7 +57,7 @@ def viewMyShareFiles(userID):
     
     return result
 
-def addNewShareFile(userID, fileName, fileSize, description):
+def addNewShareFile(userID, fileName, description):
     conn = db.connectDataBase()
     cur = conn.cursor()
     # Ensure file is not already being shared
@@ -47,17 +74,19 @@ def addNewShareFile(userID, fileName, fileSize, description):
         file.truncate()
         
         if fileName in allFiles:
-            result = -1
+            return -1
 
     # Ensure File Exists in Directory
     # If it exists, Add FileName into keyword.txt
     if os.path.exists(fileName):
         with open(openKeyword, 'w') as file:
             file.writelines(fileName)
-            result = 1
     else:
-        result = -2
+        return -2
 
+    # File exists in directory, find the fileSize
+    fileSize = file_size(path + "\\" + fileName)
+    
     # SQL INSERT new row into files table
     sql = 'INSERT INTO files (UserID, FileName, FileSize, Description) VALUES (%s, %s, %s, %s)', (userID, fileName, fileSize, description)
     cur.execute(sql)
@@ -68,9 +97,9 @@ def addNewShareFile(userID, fileName, fileSize, description):
     # 1 = success
     # -1 = File Already Shared
     # -2 = File Not In Directory
-    return result
+    return 1
 
-def editShareFile(userID, fileName, fileSize, description):
+def editShareFile(userID, fileName, description):
     conn = db.connectDataBase()
     cur = conn.cursor()
     # Simply SQL UPDATE the row where userID + fileName, update description
@@ -81,7 +110,7 @@ def editShareFile(userID, fileName, fileSize, description):
 
     newDescription = input("Enter new description: ")
     newDescriptionAdjusted = "'{}'".format(newDescription)
-
+    
     # stop gap, if result's -1 at end, error occurred
     result = -1
 
@@ -125,12 +154,7 @@ def deleteShareFile(userID, fileName):
                 result = 1   
 
      
-    delete_file(userID, fileName)
     # result is a code here, either successful, or not
     # 1 = success
     # -1 Error
     return result
-
-def createPath():
-    path = ("Enter main file path: ")
-    return path
