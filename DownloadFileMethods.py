@@ -1,6 +1,12 @@
 # Methods used for the Download Files Screen
+import pathlib
 import db_connection as db
 from ReceivingSide import *
+
+def getDownloadPath():
+    # Get path to this code file, remove code name and add directory to ReceiveFile directory
+    return pathlib.Path(__file__).parent.resolve() + "\\ReceiveFiles"
+
 
 def viewAllDownloadableFiles():
     conn = db.connectDataBase()
@@ -10,8 +16,18 @@ def viewAllDownloadableFiles():
     # Status = true in usersip
     sql = 'SELECT "FileName", "FileSize", "Description" FROM files JOIN users ON users.status = true'
 
-    result = curr.execute(sql)
+    rows = curr.execute(sql)
 
+    result = []
+    
+    for row in rows:
+        file = {
+            'FileName': row['FileName'],
+            'FileSize': row['FileSize'],
+            'Description': row['Description']
+        }
+        result.append(file)
+    
     conn.close()
     curr.close()
 
@@ -25,8 +41,19 @@ def searchForDownloadableFiles(searchWith):
     searchWith = "%" + searchWith + "%" # Add wild cards front and back of searching with
     sql = "SELECT f.FileName, f.FileSize, f.Description FROM files JOIN users ON u.status = true AND fileName = " + searchWith
 
-    result = curr.execute(sql)
+    rows = curr.execute(sql)
 
+    result = []
+    
+    for row in rows:
+        file = {
+            'FileName': row['FileName'],
+            'FileSize': row['FileSize'],
+            'Description': row['Description']
+        }
+        result.append(file)
+
+    
     conn.close()
     curr.close()
     # Need to join files table and usersip table together, only return where
@@ -34,11 +61,13 @@ def searchForDownloadableFiles(searchWith):
     # result is a list
     return result
 
-def downloadThisFile (fileName, downloadPath):
-    # SQL query usersip table, grab IP and Port
+def downloadThisFile (fileName):
+    # SQL query users table, grab IP and Port
     conn = db.connectDataBase()
     curr = conn.cursor()
 
+    downloadPath = getDownloadPath()
+    
     sql = "SELECT ip, port FROM users"
     info = curr.execute(sql)
     print(info)
