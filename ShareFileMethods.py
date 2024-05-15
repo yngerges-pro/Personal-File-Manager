@@ -29,14 +29,17 @@ def file_size(file_path):
         # Convert bytes to larger units if possible
         return convert_bytes(file_info.st_size)
 
+
 # Methods used for Share Files Screen
 
-def viewMyShareFiles(userID):
+def viewMyShareFiles(user):
     conn = db.connectDataBase()
     cur = conn.cursor()
     
-    userID = str(userID)
-    sql = 'SELECT * FROM files WHERE "UserID" = ' + userID
+
+    userID = str(user)
+    sql = 'SELECT * FROM files WHERE "userid" = ' + userID
+
     cur.execute(sql)
     
     rows = cur.fetchall()

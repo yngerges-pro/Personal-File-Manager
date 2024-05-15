@@ -61,7 +61,9 @@ class user:
         self.win.title("Logged In")
 
         # Load the exported image from Figma
-        original_image = Image.open("./Personal-File-Manager/Loggedin.png")
+
+        original_image = Image.open("Loggedin.png")
+
         resized_image = original_image.resize((500, 500))
         self.bg_image = ImageTk.PhotoImage(resized_image)
 
@@ -87,10 +89,12 @@ class user:
                            fg="#E0E0E0", background="#495580")
         downloadfiles.place(x=183, y=285)
 
+
         #white box
         # Add user label
         box = tk.Label(self.win, width=15, height=20, background="#E0E0E0")
         box.place(x=90, y=300)
+
 
         # Shows GUI
         self.win.mainloop()
@@ -104,7 +108,9 @@ class user:
         self.win.title("Guest")
 
         # Load the exported image from Figma
-        original_image = Image.open("./Personal-File-Manager/Guest.png")
+
+        original_image = Image.open("./Personal-File-Manager-main/Guest.png")
+
         resized_image = original_image.resize((500, 500))
         self.bg_image = ImageTk.PhotoImage(resized_image)
 
@@ -165,7 +171,9 @@ class user:
             self.win.title("Download")
 
             # Load the exported image from Figma
-            original_image = Image.open("./Personal-File-Manager/Download.png")
+
+            original_image = Image.open("./Personal-File-Manager-main/Download.png")
+
             resized_image = original_image.resize((500, 500))
             self.bg_image = ImageTk.PhotoImage(resized_image)
 
@@ -276,7 +284,9 @@ class user:
             self.win.title("My Files")
 
             # Load the exported image from Figma
-            original_image = Image.open("./Personal-File-Manager/MyFiles.png")
+
+            original_image = Image.open("MyFiles.png")
+
             resized_image = original_image.resize((500, 500))
             self.bg_image = ImageTk.PhotoImage(resized_image)
 
@@ -344,8 +354,14 @@ class user:
         # Shows GUI
             self.win.mainloop()
 
+        conn = db.connectDataBase()
+        cur = conn.cursor()
+
         # Initial display of files
-        files = viewMyShareFiles(Cuser)
+        sql = "SELECT id FROM users WHERE username = %s"
+        cur.execute(sql,(Cuser,))
+        UserID = cur.fetchone()["id"]
+        files = viewMyShareFiles(UserID)
         display_files()
 
     def logout(self,Cuser):
@@ -356,3 +372,4 @@ class user:
 
         # Shows GUI
         self.win.mainloop()
+
