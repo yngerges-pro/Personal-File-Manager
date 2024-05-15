@@ -1,4 +1,4 @@
-import tkinter as tk
+import tkinter as tk, simpledialog
 from tkinter import Label, Entry, PhotoImage
 from PIL import Image, ImageTk
 import os
@@ -92,8 +92,8 @@ class user:
 
         #white box
         # Add user label
-        box = tk.Label(self.win, width=15, height=20, background="#E0E0E0")
-        box.place(x=90, y=300)
+        box = tk.Label(self.win, width=30, height=7, background="white")
+        box.place(x=55, y=350)
 
 
         # Shows GUI
@@ -308,7 +308,10 @@ class user:
 
             # Initial y position for the files
             y_position = 110
-
+            def edit_file_description(userid, filename, filesize, description):
+                new_description = simpledialog.askstring("Edit Description", "Enter new description:")
+                if new_description:
+                    editShareFile(userid, filename, filesize, new_description)
             # Display the list of files in the GUI for the current page
             for i, file in enumerate(files[start_index:end_index], start=start_index):
                 FileName = tk.Label(self.win, text=f"{file['FileName']}", font=('Lato', 9), fg='white', bg="#495580")
@@ -345,10 +348,32 @@ class user:
                                 fg="#E0E0E0", background="#495580")
             goback.place(x=80, y=393)
 
-            # Add File
+            def openAddFileDialog():
+                # Function to open a window for adding a file
+                add_file_window = tk.Toplevel()
+                add_file_window.title("Add File")
+                
+                # Entry fields for file name and description
+                file_name_entry = tk.Entry(add_file_window, width=30)
+                file_name_entry.grid(row=0, column=0, padx=10, pady=5)
+                
+                description_entry = tk.Entry(add_file_window, width=30)
+                description_entry.grid(row=1, column=0, padx=10, pady=5)
+                
+                # Function to add the file when the button is clicked
+                def addFile():
+                    file_name = file_name_entry.get()
+                    description = description_entry.get()
+                    addNewShareFile(file['UserID'], file['FileName'], file['FileSize'], file['Description'])
+                    add_file_window.destroy()  # Close the window after adding the file
+                
+                # Add button to confirm adding the file
+                add_button = tk.Button(add_file_window, text="Add", command=addFile)
+                add_button.grid(row=2, column=0, padx=10, pady=5)
+                
+            # Add File button
             addfile = tk.Button(self.win, text="Add File", font=("Lato", 9, "bold"), width=10, height=1, bd=0,
-                                command=lambda userid=file['UserID'], filename=file['FileName'], filesize=file['FileSize'], description=file['Description']: addNewShareFile(userid, filename, filesize, description),
-                                fg="#E0E0E0", background="#495580")
+                                command=openAddFileDialog, fg="#E0E0E0", background="#495580")
             addfile.place(x=340, y=393)
 
         # Shows GUI
