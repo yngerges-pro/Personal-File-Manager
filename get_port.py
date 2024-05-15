@@ -13,7 +13,7 @@ def get_port(username):
             print("Failed to connect to the database.")
             return None
         cur = conn.cursor()
-        port_sql = "SELECT port FROM \"usersIP\" WHERE username = %s"
+        port_sql = "SELECT port FROM \"usersip\" WHERE username = %s"
         cur.execute(port_sql, (username,))
         user_port = cur.fetchone()
 
@@ -40,7 +40,7 @@ def get_CurrentIP(username):
             print("Failed to connect to the database.")
             return None
         cur = conn.cursor()
-        currentIp_sql = "SELECT ip FROM \"usersIP\" WHERE username = %s"
+        currentIp_sql = "SELECT ip FROM \"usersip\" WHERE username = %s"
         cur.execute(currentIp_sql, (username,))
         currentIp = cur.fetchone()    
         if currentIp is not None:

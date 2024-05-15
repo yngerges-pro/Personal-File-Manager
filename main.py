@@ -12,6 +12,7 @@ from update_publicIp import update_publicIp
 from user_status import user_status
 from user_status import not_logged_in
 
+
 from update_publicIp import insert
 
 class Login:
@@ -23,7 +24,16 @@ class Login:
 
         isValid = getloginData(Cuser, CpassW)
         if isValid:
-            pass
+            self.win.destroy()  # Destroy the login window
+            current_ip = user_publicIp()
+            # Check IP address in the database
+            check_public_ip(Cuser, current_ip)  #the entered username in the login window
+            # Update the IP address in the database
+            update_publicIp(Cuser, current_ip)  #Updates 
+            user_status(Cuser, True)
+            userObj = user()
+            userObj.logged_in_window(Cuser)
+
         else:
             messagebox.showerror("Error", "Invalid username or password. Please try again.")
             print("Please try again!")
@@ -48,7 +58,9 @@ class Login:
         self.win.title("Log in")
 
         # Load the exported image from Figma
+
         original_image = Image.open("First.png")
+
         resized_image = original_image.resize((500, 500))
         self.bg_image = ImageTk.PhotoImage(resized_image)  # Store a reference to the PhotoImage object
 

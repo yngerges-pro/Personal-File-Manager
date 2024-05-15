@@ -5,7 +5,7 @@ import os
 import psycopg2 
 import db_connection as db
 from DownloadFileMethods import viewAllDownloadableFiles, searchForDownloadableFiles, downloadThisFile
-from ShareFileMethods import viewMyShareFiles, addNewShareFile, editShareFileDescription, deleteShareFile
+from ShareFileMethods import viewMyShareFiles, addNewShareFile, editShareFile, deleteShareFile
 from user_status import not_logged_in
 
 class user:
@@ -61,7 +61,9 @@ class user:
         self.win.title("Logged In")
 
         # Load the exported image from Figma
+
         original_image = Image.open("Loggedin.png")
+
         resized_image = original_image.resize((500, 500))
         self.bg_image = ImageTk.PhotoImage(resized_image)
 
@@ -87,6 +89,13 @@ class user:
                            fg="#E0E0E0", background="#495580")
         downloadfiles.place(x=183, y=285)
 
+
+        #white box
+        # Add user label
+        box = tk.Label(self.win, width=15, height=20, background="#E0E0E0")
+        box.place(x=90, y=300)
+
+
         # Shows GUI
         self.win.mainloop()
 
@@ -99,7 +108,9 @@ class user:
         self.win.title("Guest")
 
         # Load the exported image from Figma
+
         original_image = Image.open("./Personal-File-Manager-main/Guest.png")
+
         resized_image = original_image.resize((500, 500))
         self.bg_image = ImageTk.PhotoImage(resized_image)
 
@@ -160,7 +171,9 @@ class user:
             self.win.title("Download")
 
             # Load the exported image from Figma
+
             original_image = Image.open("./Personal-File-Manager-main/Download.png")
+
             resized_image = original_image.resize((500, 500))
             self.bg_image = ImageTk.PhotoImage(resized_image)
 
@@ -271,7 +284,9 @@ class user:
             self.win.title("My Files")
 
             # Load the exported image from Figma
+
             original_image = Image.open("MyFiles.png")
+
             resized_image = original_image.resize((500, 500))
             self.bg_image = ImageTk.PhotoImage(resized_image)
 
@@ -304,12 +319,12 @@ class user:
                 Description.place(x=280, y=y_position)  # Use the calculated y_position
                 # Edit button
                 Edit = tk.Button(self.win, text="Edit", font=("Lato", 8, "bold"), width=5, height=1, bd=0, 
-                                command=lambda userid=file['UserID'], filename=file['FileName'], filesize=file['FileSize'], description=file['Description']: editShareFileDescription(userid, filename, filesize, description),
+                                command=lambda userid=file['UserID'], filename=file['FileName'], filesize=file['FileSize'], description=file['Description']: editShareFile(userid, filename, filesize, description),
                                 fg="#E0E0E0", background="#495580")
                 Edit.place(x=347, y=y_position)
                 # Remove button
                 Remove = tk.Button(self.win, text="Remove", font=("Lato", 8, "bold"), width=6, height=1, bd=0,
-                                command=lambda userid=file['UserID'], filename=file['FileName'], filesize=file['FileSize'], description=file['Description']: deleteShareFile(userid, filename, filesize, description),
+                                command=lambda userid=file['UserID'], filename=file['FileName'], filesize=file['FileSize'], description=file['Description']: deleteShareFile(userid, filename),
                                 fg="#E0E0E0", background="#495580")
                 Remove.place(x=396, y=y_position)
 
@@ -357,5 +372,4 @@ class user:
 
         # Shows GUI
         self.win.mainloop()
-
 

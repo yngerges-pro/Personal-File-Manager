@@ -19,6 +19,7 @@ def update_publicIp(username, public_Ip,port, status):
             return False
 
         cur = conn.cursor()
+
         update_sql = "UPDATE \"users\" SET ip = %s, status = %s, port =%s WHERE username = %s"  
         cur.execute(update_sql, (public_Ip, status, port, username))
         conn.commit()
@@ -38,6 +39,7 @@ def check_public_ip(username, current_ip, port, status):
             return False
 
         cur = conn.cursor()
+
         #select_sql = "SELECT usersip.ip, users.username FROM usersip INNER JOIN users ON users.username = %s"
         select_sql = "SELECT ip FROM \"users\" WHERE username = %s"
 
