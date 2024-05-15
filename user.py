@@ -1,5 +1,5 @@
-import tkinter as tk, simpledialog
-from tkinter import Label, Entry, PhotoImage
+import tkinter as tk
+from tkinter import Label, Entry, PhotoImage,simpledialog
 from PIL import Image, ImageTk
 import os
 import psycopg2 
@@ -308,10 +308,24 @@ class user:
 
             # Initial y position for the files
             y_position = 110
-            def edit_file_description(userid, filename, filesize, description):
-                new_description = simpledialog.askstring("Edit Description", "Enter new description:")
-                if new_description:
+             def edit_file_description(userid, filename, filesize, description):
+                # Function to open a window for adding a file
+                edit_file_window = tk.Toplevel()
+                edit_file_window.title("New Description")
+                
+                # Entry fields for file name and description
+                file_new_description = tk.Entry(edit_file_window, width=30)
+                file_new_description.grid(row=0, column=0, padx=10, pady=5)
+            
+                # Function to add the file when the button is clicked
+                def editFile():
+                    new_description = file_new_description.get()
                     editShareFile(userid, filename, filesize, new_description)
+                    edit_file_window.destroy()  # Close the window after adding the file
+
+                # Add button to confirm adding the file
+                edit_button = tk.Button(edit_file_window, text="Edit", command=editFile)
+                edit_button.grid(row=2, column=0, padx=10, pady=5)
             # Display the list of files in the GUI for the current page
             for i, file in enumerate(files[start_index:end_index], start=start_index):
                 FileName = tk.Label(self.win, text=f"{file['FileName']}", font=('Lato', 9), fg='white', bg="#495580")
@@ -354,10 +368,10 @@ class user:
                 add_file_window.title("Add File")
                 
                 # Entry fields for file name and description
-                file_name_entry = tk.Entry(add_file_window, width=30)
+                file_name_entry = tk.Entry(add_file_window, text="Name", width=30)
                 file_name_entry.grid(row=0, column=0, padx=10, pady=5)
                 
-                description_entry = tk.Entry(add_file_window, width=30)
+                description_entry = tk.Entry(add_file_window, text="Description", width=30)
                 description_entry.grid(row=1, column=0, padx=10, pady=5)
                 
                 # Function to add the file when the button is clicked
