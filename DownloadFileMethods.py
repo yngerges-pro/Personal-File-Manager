@@ -14,9 +14,10 @@ def viewAllDownloadableFiles():
 
     # Need to join files table and users tables, only return where
     # Status = true in usersip
-    sql = 'SELECT "FileName", "FileSize", "Description" FROM files JOIN users ON users.status = true'
+    sql = 'SELECT * FROM files'
 
-    rows = curr.execute(sql)
+    curr.execute(sql)
+    rows = curr.fetchall()
 
     result = []
     
@@ -39,7 +40,7 @@ def searchForDownloadableFiles(searchWith):
     curr = conn.cursor()
 
     searchWith = "%" + searchWith + "%" # Add wild cards front and back of searching with
-    sql = "SELECT f.FileName, f.FileSize, f.Description FROM files JOIN users ON u.status = true AND fileName = " + searchWith
+    sql = "SELECT f.FileName, f.FileSize, f.Description FROM files f JOIN users u ON u.status = true AND fileName = " + searchWith
 
     rows = curr.execute(sql)
 
