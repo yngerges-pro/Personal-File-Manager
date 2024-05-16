@@ -23,6 +23,7 @@ def viewAllDownloadableFiles():
     
     for row in rows:
         file = {
+            'UserID': row['UserID'],
             'FileName': row['FileName'],
             'FileSize': row['FileSize'],
             'Description': row['Description']
@@ -69,11 +70,12 @@ def downloadThisFile (fileName):
 
     downloadPath = getDownloadPath()
     
-    sql = "SELECT ip, port FROM users"
-    info = curr.execute(sql)
+    sql = 'SELECT ip, port FROM users JOIN files ON users.id = "files.UserID"'
+    curr.execute(sql)
+    info = curr.fetchall()
+    
     print(info)
-    ip = ""
-    port = 0000
+    ip, port = info
 
     # result = downloadFile(ip, port, fileName, downloadPath)
 
