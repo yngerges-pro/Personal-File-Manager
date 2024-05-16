@@ -161,7 +161,7 @@ def deleteShareFile(userID, fileName):
     fileName = str(fileName)
     fileNameAdjusted = "'{}'".format(fileName)
 
-    sql = 'DELETE FROM files WHERE "UserID" = ' + userID + ' AND "FileName" = ' + fileNameAdjusted
+    sql = 'DELETE FROM files WHERE "userid" = ' + userID + ' AND "filename" = ' + fileNameAdjusted
     cur.execute(sql)
     conn.commit()
 
