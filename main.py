@@ -63,7 +63,7 @@ class Login:
 
         # Load the exported image from Figma
 
-        original_image = Image.open("First.png")
+        original_image = Image.open("./Personal-File-Manager/First.png")
 
         resized_image = original_image.resize((500, 500))
         self.bg_image = ImageTk.PhotoImage(resized_image)  # Store a reference to the PhotoImage object
@@ -160,7 +160,7 @@ class SignUp:
         self.win.title("Sign up")
 
         # Load the exported image from Figma
-        original_image = Image.open("Second.png")
+        original_image = Image.open("./Personal-File-Manager/Second.png")
         resized_image = original_image.resize((500, 500))
         bg_image = ImageTk.PhotoImage(resized_image)
 
