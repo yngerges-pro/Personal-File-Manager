@@ -247,7 +247,7 @@ class user:
                 Description.place(x=280, y=y_position)  # Use the calculated y_position
                 # Download button
                 Download = tk.Button(self.win, text="Download", font=("Lato", 9, "bold"), width=10, height=1, bd=0, 
-                            command=lambda userid=file['UserID'], filename=file['FileName'], filesize=file['FileSize'], description=file['Description']: downloadThisFile(userid, filename, filesize, description),
+                            command=lambda userid=file['UserID'], filename=file['FileName'], filesize=file['FileSize'], description=file['Description']: downloadThisFile(filename),
                             fg="#E0E0E0", background="#495580")
                 Download.place(x=353, y=y_position)
 
@@ -266,7 +266,7 @@ class user:
 
             # Inside the downloads_window method
             # Search Bar with Icon
-            search_icon = Image.open("search_icon.png")
+            search_icon = Image.open("./Personal-File-Manager/search_icon.png")
             search_icon = search_icon.resize((26, 26), Image.LANCZOS)  # Resize the icon image to fit the search bar
             search_icon = ImageTk.PhotoImage(search_icon)
 
