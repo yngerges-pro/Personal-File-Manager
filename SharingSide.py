@@ -7,7 +7,7 @@ class ShareFiles():
     PublicIP = "0.0.0.0" # Uninitialized
     SharingPort = 1234 # Uninitialized
     PathToDirectory = ""
-    mySocket = socket.socket()
+    mySocket = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
 
     BUFFER_SIZE = 1024 # 1 kb per time step
 
