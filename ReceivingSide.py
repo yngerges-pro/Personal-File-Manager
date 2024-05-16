@@ -3,7 +3,7 @@ import socket
 BUFFER_SIZE = 1024
 # Receiver Side
 def downloadFile(hostIP, hostPort, fileName, pathToDownloadTo):
-    mySocket = socket.socket()
+    mySocket = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
     print(f"Attempting to connect to {hostIP}:{hostPort}")
     try:
         mySocket.connect((hostIP, hostPort))
