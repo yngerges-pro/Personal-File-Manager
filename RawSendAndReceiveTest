@@ -1,0 +1,32 @@
+import pathlib
+
+from SharingSide import *
+from RecievingSide import *
+import db_connection as db
+
+sendPath = str(pathlib.Path(__file__).parent.resolve()) + "\\ShareFiles"
+receivePath = str(pathlib.Path(__file__).parent.resolve()) + "\\ReceiveFiles"
+
+SharingObj = ShareFiles('127.0.0.1', 80, sendPath)
+
+conn = db.connectDataBase()
+curr = conn.cursor()
+
+fileName = "test.txt"
+
+sql1 = "SELECT ip, port FORM users WHERE id = %s"
+sql2 = "SELECT userid FROM files WHERE FileName = %s"
+
+curr.execute(sql2, fileName)
+userid = curr.fetchone()["userid"]
+
+curr.execute(sql1, (userid, ))
+IPandPort = curr.fetchone()
+ip = IPandPort["ip"]
+port = IPandPort["port"]
+
+whatHappened = downloadFile(ip, port, "GonnaSendThis.txt", receivePath)
+print(whatHappened)
+whatHappened = downloadFile(ip, port, "GonnaSendThis.txt", receivePath)
+print(whatHappened)
+SharingObj.shutDownSharingSocket()
