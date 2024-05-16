@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 import pathlib
 import psycopg2
 import db_connection as db
@@ -7,7 +8,7 @@ import db_connection as db
 # Side Methods
 def createPath():
     # Will return where this code is at, then add the directory ShareFiles onto path
-    return pathlib.Path(__file__).parent.resolve() + "\\ShareFiles"
+    return str(pathlib.Path(__file__).parent.resolve()) + "\\ShareFiles"
 
 def convert_bytes(num):
     """
@@ -23,6 +24,8 @@ def file_size(file_path):
     """
     this function will return the file size
     """
+
+
     if os.path.isfile(file_path):
         # Get Number of bytes
         file_info = os.stat(file_path)
@@ -38,7 +41,7 @@ def viewMyShareFiles(user):
     
 
     userID = str(user)
-    sql = 'SELECT * FROM files WHERE "userid" = ' + userID
+    sql = 'SELECT * FROM files WHERE "UserID" = ' + userID
 
     cur.execute(sql)
     
@@ -71,17 +74,18 @@ def addNewShareFile(userID, fileName, description):
     path = createPath()
     openKeyword = path + "\\keyword.txt"
 
-    with open(openKeyword, 'r+') as file:
+    filePath = path + "\\" + fileName
+
+    with open(openKeyword, 'r') as file:
         allFiles = file.readlines()
         file.seek(0)
-        file.truncate()
         
         if fileName in allFiles:
             return -1
 
     # Ensure File Exists in Directory
     # If it exists, Add FileName into keyword.txt
-    if os.path.exists(fileName):
+    if pathlib.Path(filePath).is_file():
         with open(openKeyword, 'w') as file:
             file.writelines(fileName)
     else:
@@ -91,9 +95,13 @@ def addNewShareFile(userID, fileName, description):
     fileSize = file_size(path + "\\" + fileName)
     
     # SQL INSERT new row into files table
-    sql = 'INSERT INTO files (UserID, FileName, FileSize, Description) VALUES (%s, %s, %s, %s)', (userID, fileName, fileSize, description)
-    cur.execute(sql)
+    sql = "INSERT INTO files VALUES (%s, %s, %s, %s)"
+    val = (userID, fileName, fileSize, description)
 
+
+    cur.execute(sql, val)
+    conn.commit()
+    
     cur.close()
     conn.close()
     # result is a code here, either successful, or not
@@ -101,6 +109,21 @@ def addNewShareFile(userID, fileName, description):
     # -1 = File Already Shared
     # -2 = File Not In Directory
     return 1
+
+# def testInsert():
+#     print("Inside test insert rn")
+#     conn = db.connectDataBase()
+#     curr = conn.cursor()
+
+#     sql = "INSERT INTO files VALUES (%s, %s, %s, %s)"
+#     val = (int(1), "bigFile", "size big", "garbo")
+#     curr.execute(sql, val)
+#     conn.commit()
+    
+#     curr.close()
+#     conn.close()
+#     return 1
+    
 
 def editShareFile(userID, fileName, description):
     conn = db.connectDataBase()
@@ -140,6 +163,8 @@ def deleteShareFile(userID, fileName):
 
     sql = 'DELETE FROM files WHERE "UserID" = ' + userID + ' AND "FileName" = ' + fileNameAdjusted
     cur.execute(sql)
+    conn.commit()
+
     result = -1
 
     path = createPath()
@@ -160,4 +185,10 @@ def deleteShareFile(userID, fileName):
     # result is a code here, either successful, or not
     # 1 = success
     # -1 Error
+
+    cur.close()
+    conn.close()
+
     return result
+
+# testInsert()
