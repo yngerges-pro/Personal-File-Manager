@@ -422,7 +422,7 @@ class user:
                     file_name = file_name_entry.get()
                     description = description_entry.get()
                     user_id = user.userID(self, Cuser)
-                    addNewShareFile(user_id, file_name, file['FileSize'], description)
+                    addNewShareFile(user_id, file_name, description) # Removed file['FileSize'] as not used in method
                     add_file_window.destroy()  # Close the window after adding the file
                 
                 # Add button to confirm adding the file
