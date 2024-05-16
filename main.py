@@ -26,10 +26,7 @@ class Login:
         if isValid:
             self.win.destroy()  # Destroy the login window
             current_ip = user_publicIp()
-            # Check IP address in the database
-            check_public_ip(Cuser, current_ip)  #the entered username in the login window
-            # Update the IP address in the database
-            update_publicIp(Cuser, current_ip)  #Updates 
+
             user_status(Cuser, True)
             userObj = user()
             userObj.logged_in_window(Cuser)
@@ -59,7 +56,7 @@ class Login:
 
         # Load the exported image from Figma
 
-        original_image = Image.open("First.png")
+        original_image = Image.open("./Personal-File-Manager/First.png")
 
         resized_image = original_image.resize((500, 500))
         self.bg_image = ImageTk.PhotoImage(resized_image)  # Store a reference to the PhotoImage object
@@ -156,7 +153,7 @@ class SignUp:
         self.win.title("Sign up")
 
         # Load the exported image from Figma
-        original_image = Image.open("Second.png")
+        original_image = Image.open("./Personal-File-Manager/Second.png")
         resized_image = original_image.resize((500, 500))
         bg_image = ImageTk.PhotoImage(resized_image)
 
