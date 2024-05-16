@@ -9,7 +9,22 @@ from DownloadFileMethods import viewAllDownloadableFiles, searchForDownloadableF
 from ShareFileMethods import viewMyShareFiles, addNewShareFile, editShareFile, deleteShareFile
 from user_status import not_logged_in
 
+from user_publicIp import user_publicIp
+from update_publicIp import check_public_ip
+from update_publicIp import update_publicIp 
+
+import pathlib
+
+from SharingSide import*
+
+from update_publicIp import check_public_ip
+
 class user:
+    # current_ip = user_publicIp()
+    # current_ip = "10.110.253.243"
+    current_ip = "0.0.0.0"
+    VarPath = str(pathlib.Path(__file__).parent.resolve()) + "\\ShareFiles"
+    OpenSharingSide = ShareFiles(current_ip, 80, VarPath)
     def userID(self, username):
         try:
             # Establish a connection to the database
@@ -92,7 +107,7 @@ class user:
 
         # Load the exported image from Figma
 
-        original_image = Image.open("./Personal-File-Manager/Loggedin.png")
+        original_image = Image.open("Loggedin.png")
 
         resized_image = original_image.resize((500, 500))
         self.bg_image = ImageTk.PhotoImage(resized_image)
@@ -202,7 +217,7 @@ class user:
 
             # Load the exported image from Figma
 
-            original_image = Image.open("./Personal-File-Manager/Download.png")
+            original_image = Image.open("Download.png")
 
             resized_image = original_image.resize((500, 500))
             self.bg_image = ImageTk.PhotoImage(resized_image)
@@ -266,7 +281,7 @@ class user:
 
             # Inside the downloads_window method
             # Search Bar with Icon
-            search_icon = Image.open("./Personal-File-Manager/search_icon.png")
+            search_icon = Image.open("search_icon.png")
             search_icon = search_icon.resize((26, 26), Image.LANCZOS)  # Resize the icon image to fit the search bar
             search_icon = ImageTk.PhotoImage(search_icon)
 
@@ -315,7 +330,7 @@ class user:
 
             # Load the exported image from Figma
 
-            original_image = Image.open("./Personal-File-Manager/MyFiles.png")
+            original_image = Image.open("MyFiles.png")
 
             resized_image = original_image.resize((500, 500))
             self.bg_image = ImageTk.PhotoImage(resized_image)

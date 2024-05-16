@@ -83,6 +83,5 @@ class ShareFiles():
         self.mySocket.close()
         print("Sharing Socket Closed")
 
-if __name__ == "main":
-    sender = ShareFiles(ip="ip", Port="port", Path="path")
-
+# if __name__ == "main":
+#     sender = ShareFiles(ip="ip", Port="port", Path="path")

@@ -23,10 +23,10 @@ def viewAllDownloadableFiles():
     
     for row in rows:
         file = {
-            'UserID': row['UserID'],
-            'FileName': row['FileName'],
-            'FileSize': row['FileSize'],
-            'Description': row['Description']
+            'UserID': row['userid'],
+            'FileName': row['filename'],
+            'FileSize': row['filesize'],
+            'Description': row['description']
         }
         result.append(file)
     
@@ -70,17 +70,31 @@ def downloadThisFile (fileName):
 
     downloadPath = getDownloadPath()
     
-    sql = 'SELECT ip, port FROM users JOIN files ON users.id = "files.UserID"'
-    curr.execute(sql)
-    info = curr.fetchall()
-    
-    print(info)
-    ip, port = info
+    # sql = 'SELECT ip, port FROM users JOIN files ON users.id = "files.UserID"'
+    sql1 = "SELECT ip, port FROM users WHERE id = %s"
+    sql2 = "SELECT UserID From files WHere FileName = %s"
 
-    # result = downloadFile(ip, port, fileName, downloadPath)
+    
+    curr.execute(sql2, (fileName, ))
+
+    Userid= curr.fetchone()["userid"]
+    
+    curr.execute(sql1, (Userid, ))
+    
+    IPandPort = curr.fetchone()
+    ip = IPandPort["ip"]
+    port = IPandPort["port"]
+
+
+    print("/nHere IP", ip)
+    print("/nHere port", port)
+
+    result = downloadFile(ip, port, (fileName, ), downloadPath)
+
+
 
     # Result is a code
     # 1 = Successful
     # -1 = Error in Connection (Cannot Connect, or Connection Full, or User Is Offline?)
     # -2 = File Wasn't Found (File Owner May Have Moved The File?)
-    return info
+    return result

@@ -41,7 +41,7 @@ def viewMyShareFiles(user):
     
 
     userID = str(user)
-    sql = 'SELECT * FROM files WHERE "UserID" = ' + userID
+    sql = 'SELECT * FROM files WHERE "userid" = ' + userID
 
     cur.execute(sql)
     
@@ -51,10 +51,10 @@ def viewMyShareFiles(user):
     
     for row in rows:
         file = {
-            'UserID': row['UserID'],
-            'FileName': row['FileName'],
-            'FileSize': row['FileSize'],
-            'Description': row['Description']
+            'UserID': row['userid'],
+            'FileName': row['filename'],
+            'FileSize': row['filesize'],
+            'Description': row['description']
         }
         result.append(file)
 
