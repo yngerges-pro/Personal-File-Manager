@@ -89,7 +89,7 @@ def downloadThisFile (fileName):
     print("/nHere IP", ip)
     print("/nHere port", port)
 
-    result = downloadFile(ip, port, (fileName, ), downloadPath)
+    result = downloadFile(ip, int(port), fileName, downloadPath)
 
 
 
