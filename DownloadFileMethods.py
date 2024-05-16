@@ -5,7 +5,7 @@ from ReceivingSide import *
 
 def getDownloadPath():
     # Get path to this code file, remove code name and add directory to ReceiveFile directory
-    return pathlib.Path(__file__).parent.resolve() + "\\ReceiveFiles"
+    return str(pathlib.Path(__file__).parent.resolve()) + "\\ReceiveFiles"
 
 
 def viewAllDownloadableFiles():
