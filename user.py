@@ -1,5 +1,6 @@
 import tkinter as tk
-from tkinter import Label, Entry, PhotoImage,simpledialog
+from tkinter import Label, Entry, PhotoImage
+from tkinter import simpledialog
 from PIL import Image, ImageTk
 import os
 import psycopg2 
@@ -9,6 +10,35 @@ from ShareFileMethods import viewMyShareFiles, addNewShareFile, editShareFile, d
 from user_status import not_logged_in
 
 class user:
+    def userID(self, username):
+        try:
+            # Establish a connection to the database
+            conn = db.connectDataBase()
+            cur = conn.cursor()
+
+            # SQL query to select the row corresponding to the given username
+            sql_query = "SELECT * FROM users WHERE username = %s"
+
+            # Execute the SQL query with the username parameter
+            cur.execute(sql_query, (username,))
+
+            # Fetch the first row
+            first_row = cur.fetchone()
+
+            # If a row is found, return the first value from that row
+            if first_row:
+                id_value = first_row['id']  # Access the value using dictionary indexing
+                return id_value
+            else:
+                print("User not found.")
+
+            # Close the cursor and connection
+            cur.close()
+            conn.close()
+
+        except psycopg2.Error as e:
+            print(f"Database error: {e}")
+
     def listdownloadsfile(self):
         try:
             # Establish a connection to the database
@@ -109,7 +139,7 @@ class user:
 
         # Load the exported image from Figma
 
-        original_image = Image.open("./Personal-File-Manager-main/Guest.png")
+        original_image = Image.open("Guest.png")
 
         resized_image = original_image.resize((500, 500))
         self.bg_image = ImageTk.PhotoImage(resized_image)
@@ -172,7 +202,7 @@ class user:
 
             # Load the exported image from Figma
 
-            original_image = Image.open("./Personal-File-Manager-main/Download.png")
+            original_image = Image.open("Download.png")
 
             resized_image = original_image.resize((500, 500))
             self.bg_image = ImageTk.PhotoImage(resized_image)
@@ -236,7 +266,7 @@ class user:
 
             # Inside the downloads_window method
             # Search Bar with Icon
-            search_icon = Image.open("./Personal-File-Manager-main/search_icon.png")
+            search_icon = Image.open("search_icon.png")
             search_icon = search_icon.resize((26, 26), Image.LANCZOS)  # Resize the icon image to fit the search bar
             search_icon = ImageTk.PhotoImage(search_icon)
 
@@ -308,7 +338,45 @@ class user:
 
             # Initial y position for the files
             y_position = 110
-             def edit_file_description(userid, filename, filesize, description):
+
+            # Display the list of files in the GUI for the current page
+            for i, file in enumerate(files[start_index:end_index], start=start_index):
+                FileName = tk.Label(self.win, text=f"{file['FileName']}", font=('Lato', 9), fg='white', bg="#495580")
+                FileName.place(x=80, y=y_position)  # Use the calculated y_position
+                FileSize = tk.Label(self.win, text=f"{file['FileSize']}", font=('Lato', 9), fg='white', bg="#495580")
+                FileSize.place(x=180, y=y_position)  # Use the calculated y_position
+                Description = tk.Label(self.win, text=f"{file['Description']}", font=('Lato', 9), fg='white', bg="#495580")
+                Description.place(x=280, y=y_position)  # Use the calculated y_position
+                # Edit button
+                Edit = tk.Button(self.win, text="Edit", font=("Lato", 8, "bold"), width=5, height=1, bd=0, 
+                                command=lambda userid=file['UserID'], filename=file['FileName'], filesize=file['FileSize'], description=file['Description']: self.edit_file_description(userid, filename, filesize, description),
+                                fg="#E0E0E0", background="#495580")
+                Edit.place(x=347, y=y_position)
+                # Remove button
+                Remove = tk.Button(self.win, text="Remove", font=("Lato", 8, "bold"), width=6, height=1, bd=0,
+                                command=lambda userid=file['UserID'], filename=file['FileName'], filesize=file['FileSize'], description=file['Description']: deleteShareFile(userid, filename),
+                                fg="#E0E0E0", background="#495580")
+                Remove.place(x=396, y=y_position)
+
+                # Increment y_position for the next file
+                y_position += 38
+                
+
+            # Arrows
+            left_arrow = tk.Button(self.win, text="◀", font=("Lato", 12), width=2, height=1, bd=0, command=navigate_left,
+                                fg="#E0E0E0", background="#495580")
+            left_arrow.place(x=218, y=392)
+
+            right_arrow = tk.Button(self.win, text="▶", font=("Lato", 12), width=2, height=1, bd=0, command=navigate_right,
+                                fg="#E0E0E0", background="#495580")
+            right_arrow.place(x=247, y=392)
+
+            # Go Back
+            goback = tk.Button(self.win, text="Go Back", font=("Lato", 9, "bold"), width=10, height=1, bd=0, command=lambda: self.logged_in_window(Cuser),
+                                fg="#E0E0E0", background="#495580")
+            goback.place(x=80, y=393)
+
+            def edit_file_description(userid, filename, filesize, description):
                 # Function to open a window for adding a file
                 edit_file_window = tk.Toplevel()
                 edit_file_window.title("New Description")
@@ -326,65 +394,41 @@ class user:
                 # Add button to confirm adding the file
                 edit_button = tk.Button(edit_file_window, text="Edit", command=editFile)
                 edit_button.grid(row=2, column=0, padx=10, pady=5)
-            # Display the list of files in the GUI for the current page
-            for i, file in enumerate(files[start_index:end_index], start=start_index):
-                FileName = tk.Label(self.win, text=f"{file['FileName']}", font=('Lato', 9), fg='white', bg="#495580")
-                FileName.place(x=80, y=y_position)  # Use the calculated y_position
-                FileSize = tk.Label(self.win, text=f"{file['FileSize']}", font=('Lato', 9), fg='white', bg="#495580")
-                FileSize.place(x=180, y=y_position)  # Use the calculated y_position
-                Description = tk.Label(self.win, text=f"{file['Description']}", font=('Lato', 9), fg='white', bg="#495580")
-                Description.place(x=280, y=y_position)  # Use the calculated y_position
-                # Edit button
-                Edit = tk.Button(self.win, text="Edit", font=("Lato", 8, "bold"), width=5, height=1, bd=0, 
-                                command=lambda userid=file['UserID'], filename=file['FileName'], filesize=file['FileSize'], description=file['Description']: editShareFile(userid, filename, filesize, description),
-                                fg="#E0E0E0", background="#495580")
-                Edit.place(x=347, y=y_position)
-                # Remove button
-                Remove = tk.Button(self.win, text="Remove", font=("Lato", 8, "bold"), width=6, height=1, bd=0,
-                                command=lambda userid=file['UserID'], filename=file['FileName'], filesize=file['FileSize'], description=file['Description']: deleteShareFile(userid, filename),
-                                fg="#E0E0E0", background="#495580")
-                Remove.place(x=396, y=y_position)
-
-                # Increment y_position for the next file
-                y_position += 38
-
-            # Arrows
-            left_arrow = tk.Button(self.win, text="◀", font=("Lato", 12), width=2, height=1, bd=0, command=navigate_left,
-                                fg="#E0E0E0", background="#495580")
-            left_arrow.place(x=218, y=392)
-
-            right_arrow = tk.Button(self.win, text="▶", font=("Lato", 12), width=2, height=1, bd=0, command=navigate_right,
-                                fg="#E0E0E0", background="#495580")
-            right_arrow.place(x=247, y=392)
-
-            # Go Back
-            goback = tk.Button(self.win, text="Go Back", font=("Lato", 9, "bold"), width=10, height=1, bd=0, command=lambda: self.logged_in_window(Cuser),
-                                fg="#E0E0E0", background="#495580")
-            goback.place(x=80, y=393)
 
             def openAddFileDialog():
                 # Function to open a window for adding a file
                 add_file_window = tk.Toplevel()
                 add_file_window.title("Add File")
                 
-                # Entry fields for file name and description
-                file_name_entry = tk.Entry(add_file_window, text="Name", width=30)
-                file_name_entry.grid(row=0, column=0, padx=10, pady=5)
+                # Label for file name
+                file_name_label = tk.Label(add_file_window, text="Name")
+                file_name_label.grid(row=0, column=0, padx=10, pady=5)
                 
-                description_entry = tk.Entry(add_file_window, text="Description", width=30)
-                description_entry.grid(row=1, column=0, padx=10, pady=5)
+                # Entry field for file name
+                file_name_entry = tk.Entry(add_file_window, width=30)
+                file_name_entry.grid(row=0, column=1, padx=10, pady=5)
+                
+                # Label for description
+                description_label = tk.Label(add_file_window, text="Description")
+                description_label.grid(row=1, column=0, padx=10, pady=5)
+                
+                # Entry field for description
+                description_entry = tk.Entry(add_file_window, width=30)
+                description_entry.grid(row=1, column=1, padx=10, pady=5)
+    
                 
                 # Function to add the file when the button is clicked
                 def addFile():
                     file_name = file_name_entry.get()
                     description = description_entry.get()
-                    addNewShareFile(file['UserID'], file['FileName'], file['FileSize'], file['Description'])
+                    user_id = user.userID(self, Cuser)
+                    addNewShareFile(user_id, file_name, file['FileSize'], description)
                     add_file_window.destroy()  # Close the window after adding the file
                 
                 # Add button to confirm adding the file
                 add_button = tk.Button(add_file_window, text="Add", command=addFile)
                 add_button.grid(row=2, column=0, padx=10, pady=5)
-                
+
             # Add File button
             addfile = tk.Button(self.win, text="Add File", font=("Lato", 9, "bold"), width=10, height=1, bd=0,
                                 command=openAddFileDialog, fg="#E0E0E0", background="#495580")
