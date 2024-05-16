@@ -92,7 +92,7 @@ class user:
 
         # Load the exported image from Figma
 
-        original_image = Image.open("Loggedin.png")
+        original_image = Image.open("./Personal-File-Manager/Loggedin.png")
 
         resized_image = original_image.resize((500, 500))
         self.bg_image = ImageTk.PhotoImage(resized_image)
@@ -202,7 +202,7 @@ class user:
 
             # Load the exported image from Figma
 
-            original_image = Image.open("Download.png")
+            original_image = Image.open("./Personal-File-Manager/Download.png")
 
             resized_image = original_image.resize((500, 500))
             self.bg_image = ImageTk.PhotoImage(resized_image)
@@ -315,7 +315,7 @@ class user:
 
             # Load the exported image from Figma
 
-            original_image = Image.open("MyFiles.png")
+            original_image = Image.open("./Personal-File-Manager/MyFiles.png")
 
             resized_image = original_image.resize((500, 500))
             self.bg_image = ImageTk.PhotoImage(resized_image)
@@ -422,7 +422,8 @@ class user:
                     file_name = file_name_entry.get()
                     description = description_entry.get()
                     user_id = user.userID(self, Cuser)
-                    addNewShareFile(user_id, file_name, description) # Removed file['FileSize'] as not used in method
+                    newFile = addNewShareFile(user_id, file_name, description) # Removed file['FileSize'] as not used in method
+                    print("New File: " + str(newFile))
                     add_file_window.destroy()  # Close the window after adding the file
                 
                 # Add button to confirm adding the file
